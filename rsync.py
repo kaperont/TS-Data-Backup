@@ -1,4 +1,3 @@
-from posixpath import split
 from subprocess import Popen, PIPE, STDOUT
 import os
 import time
@@ -16,13 +15,13 @@ def rsync_run(exclude, src, dest):
         if not os.path.exists(dest):
             os.mkdir(dest)
         
-        p = Popen(['rsync', '-rhv', '--progress', '--exclude=' + exclude + '"', src, dest], stdout=PIPE, stderr=STDOUT, text=True)
+        p = Popen(['rsync', '-rhv', '--progress', '--update', '--exclude=' + exclude + '"', src, dest], stdout=PIPE, stderr=STDOUT, text=True)
 
         # Log progress
         timeout_base = 0
         timeout_limit = 100000 # 100 seconds
         while True:
-            if getMS() - timeout_base >= timeout_limit AND timeout_base != 0:
+            if getMS() - timeout_base >= timeout_limit and timeout_base != 0:
                 print('Some process taking too long')
 
             line =  p.stdout.readline()
@@ -64,9 +63,6 @@ def rsync_run(exclude, src, dest):
                         numFileTransferred = int(re.search(r'\d+', splitLine[4]).group())
                         transferStat = list(map(int, re.findall(r'\d+', splitLine[5])))
                         print('File #' + str(numFileTransferred) + ' There are ' + str(transferStat[0]) + '/' + str(transferStat[1]) + ' left')
-
-
-                    
     else:
         raise FileNotFoundError('Source Directory Not Found!')
 

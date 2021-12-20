@@ -8,3 +8,7 @@ Cedarville University (c)
 
 Kyle Peront
 Samuel Jiang
+
+## Dependencies
+
+smartmontools
