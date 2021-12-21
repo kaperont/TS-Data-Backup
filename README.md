@@ -1,4 +1,4 @@
-### TechStop Data Backup Software
+# TechStop Data Backup Software
 
 ## Owners
 
@@ -11,7 +11,9 @@ Cedarville University (c)
 
 ## Dependencies
 
+### Linux:
 - smartmontools
+### Python
 - GTK+ (gi)
 
 ## Build instructions

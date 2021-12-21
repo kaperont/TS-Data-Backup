@@ -8,10 +8,12 @@ from gi.repository import Gtk
 
 class MainWindow(object):
 
+    # New Customer Button has been clicked
     def on_NewCustomerButton_clicked(self, object, data=None):
         print("Opening NewCustomerWindow")
         window = NewCustomerWindow(self.tickets)
 
+    ##### MENU BAR ITEMS #####
     def on_AboutItem_activate(self, object, data=None):
         window = AboutWindow(self.tickets)
 
