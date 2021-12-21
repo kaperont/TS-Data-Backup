@@ -9,7 +9,7 @@ class AboutWindow(object):
 
     def __init__(self, tickets):
         # Set the Gladefile to read from
-        self.gladefile = "../ui/backup-utility.glade"
+        self.gladefile = "../glade/backup-utility.glade"
 
         # Create the GTK Builder from the Gladefile
         self.builder = Gtk.Builder()
