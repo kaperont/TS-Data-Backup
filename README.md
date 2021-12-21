@@ -16,4 +16,4 @@ Cedarville University (c)
 
 ## Build instructions
 
-To run the application, descend into `./src/python` then execute the following command: `python backup_utility.py`
+To run the application, descend into `./src/python` then execute the following command:<br>`python backup_utility.py`
