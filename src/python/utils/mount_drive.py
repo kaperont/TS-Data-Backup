@@ -164,13 +164,18 @@ def unmountWindows(mountpoint):
         print('This process requires sudo privileges!')
 
 
+def fileVaultOn(partition):
+    result = run(['apfsutil', partition], capture_output=True)
+    output = result.stdout.decode('utf-8')
+    encryption = output.split('FileVault:')[-1].split()[0]
+    if encryption == 'yes':
+        return True
+    else:
+        return False
+
+
 def mountAPFS(partition, password=''):
     if hd_test.isSudo():
-        # Check if the APFS is encrypted
-        result = run(['apfsutil', partition], capture_output=True)
-        output = result.stdout.decode('utf-8')
-        encryption = output.split('FileVault:')[-1].split()[0]
-        
         # Create dir if does not exist
         driveMountDir = '/media/mac'
         if not os.path.isdir(driveMountDir):
@@ -184,14 +189,14 @@ def mountAPFS(partition, password=''):
                 print(output)
         
         # Drive not encrypted
-        if encryption == 'no':
+        if not fileVaultOn():
             result = run(['apfs-utils', partition, driveMountDir], capture_output=True)
             output = result.stdout.decode('utf-8').splitlines()
             # Something is wrong with the mounting if there is an output
             if len(output) != 0:
                 print(output)
         # Drive encrypted
-        elif encryption == 'yes':
+        else:
             if password == '':
                 print('No password provided!')
             else:
@@ -200,8 +205,7 @@ def mountAPFS(partition, password=''):
                 # Something is wrong with the mounting if there is an output
                 if len(output) != 0:
                     print(output)
-        else:
-            print('Something went wrong')
+
     else:
         print('This process requires sudo privileges!')
 
@@ -234,6 +238,7 @@ def mountPart(partition, driveType, mountpoint = '', password = ''):
     # An MacOS drive
     elif driveType == 'apfs':
         mountAPFS(partition, password)
+
 
 def unmountPart(driveType, mountpoint=''):
     # If the drive is BitLocker locked
