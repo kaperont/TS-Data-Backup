@@ -1,6 +1,12 @@
 import gi
 import os
+import re
 import subprocess
+import time
+import pdb
+
+from checkDiskProgressWindow import CheckDiskProgressWindow
+from subprocess import run
 
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
@@ -19,6 +25,9 @@ class NewCustomerWindow(object):
     # Destruction of Window
     def onDestroy(self, object, data=None):
         self.window.destroy()
+    
+    def openProgressBar(self, src):
+        self.progressWindow = CheckDiskProgressWindow()
 
     # Start Backup Button has been clicked
     def on_StartBackupButton_clicked(self, object, data=None):
@@ -43,13 +52,9 @@ class NewCustomerWindow(object):
         self.tickets[ticketNumber] = ticket
         print(self.tickets)
 
-        # try:
-        #     command = 'sudo python3 utils/hd_test.py ' + srcDirectory
-        #     subprocess.check_output(command, shell=True)
-        # except subprocess.CalledProcessError as e:
-        #     print ('e.output: ', e.output)
-        
-        if shortDST(srcDirectory):
+        self.progressWindow.show()
+
+        if self.progressWindow.shortDST(srcDirectory):
             print("%s passed the hard drive test.\nBeginning Backup..." % srcDirectory)
 
     # NewCustomerWindow init
@@ -61,8 +66,11 @@ class NewCustomerWindow(object):
         self.builder = Gtk.Builder()
         self.builder.add_from_file(self.gladefile)
         self.builder.connect_signals(self)
+        # pdb.set_trace()
 
         # Locate the NewCustomerWindow and display
         self.window = self.builder.get_object("NewCustomerWindow")
         self.window.show()
+        
         self.tickets = tickets
+        self.progressWindow = CheckDiskProgressWindow()
