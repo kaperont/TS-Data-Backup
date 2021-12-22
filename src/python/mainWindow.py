@@ -36,5 +36,6 @@ class MainWindow(object):
         # Locate the MainWindow and display
         self.window = self.builder.get_object("MainWindow")
         self.window.connect("destroy", Gtk.main_quit)
+        self.window.set_icon_from_file('../assets/drive.png')
         self.window.show()
         self.tickets = tickets
