@@ -160,6 +160,67 @@ def unmountWindows(mountpoint):
                 # Something is wrong with the unmount if there is an output
                 if len(output) != 0:
                     print(output)
+    else:
+        print('This process requires sudo privileges!')
+
+
+def mountAPFS(partition, password=''):
+    if hd_test.isSudo():
+        # Check if the APFS is encrypted
+        result = run(['apfsutil', partition], capture_output=True)
+        output = result.stdout.decode('utf-8')
+        encryption = output.split('FileVault:')[-1].split()[0]
+        
+        # Create dir if does not exist
+        driveMountDir = '/media/mac'
+        if not os.path.isdir(driveMountDir):
+            print(driveMountDir + ' does not exist. Creating')
+            os.mkdir(driveMountDir)
+        elif len(os.listdir(driveMountDir)) != 0:
+            result = run(['umount', driveMountDir], capture_output=True)
+            output = result.stdout.decode('utf-8').splitlines()
+            # Something is wrong with the unmount if there is an output
+            if len(output) != 0:
+                print(output)
+        
+        # Drive not encrypted
+        if encryption == 'no':
+            result = run(['apfs-utils', partition, driveMountDir], capture_output=True)
+            output = result.stdout.decode('utf-8').splitlines()
+            # Something is wrong with the mounting if there is an output
+            if len(output) != 0:
+                print(output)
+        # Drive encrypted
+        elif encryption == 'yes':
+            if password == '':
+                print('No password provided!')
+            else:
+                result = run(['apfs-utils', '-r', password, partition, driveMountDir], capture_output=True)
+                output = result.stdout.decode('utf-8').splitlines()
+                # Something is wrong with the mounting if there is an output
+                if len(output) != 0:
+                    print(output)
+        else:
+            print('Something went wrong')
+    else:
+        print('This process requires sudo privileges!')
+
+
+def unmountAPFS():
+    if hd_test.isSudo():
+        driveMountDir = '/media/mac'
+        # Create dir if does not exist
+        if not os.path.isdir(driveMountDir):
+            print(driveMountDir + ' does not exist. Creating')
+            os.mkdir(driveMountDir)
+        elif len(os.listdir(driveMountDir)) != 0:
+            result = run(['umount', driveMountDir], capture_output=True)
+            output = result.stdout.decode('utf-8').splitlines()
+            # Something is wrong with the unmount if there is an output
+            if len(output) != 0:
+                print(output)
+    else:
+        print('This process requires sudo privileges!')
 
 
 # Main mounting method for all mountings
@@ -170,4 +231,17 @@ def mountPart(partition, driveType, mountpoint = '', password = ''):
     # Most likely an un-encrypted Windows drive
     elif driveType == 'ntfs':
         mountWindows(partition, mountpoint)
+    # An MacOS drive
+    elif driveType == 'apfs':
+        mountAPFS(partition, password)
 
+def unmountPart(driveType, mountpoint=''):
+    # If the drive is BitLocker locked
+    if driveType == 'BitLocker':
+        unmountBitLocker()
+    # Most likely an un-encrypted Windows drive
+    elif driveType == 'ntfs':
+        unmountWindows(mountpoint)
+    # An MacOS drive
+    elif driveType == 'apfs':
+        unmountAPFS()
