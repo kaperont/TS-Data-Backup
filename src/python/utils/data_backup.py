@@ -89,7 +89,7 @@ def backupData(customer_name, ticket_number, mountpoint, drivetype, users:list):
     backupDir = customer_name + ' ' + str(ticket_number)
     absBackupDir = backupDrive + '/' + backupDir
     if not os.path.isdir(absBackupDir):
-        os.mkdir(backupDir)
+        os.mkdir(absBackupDir)
         print('Created backup folder: ' + absBackupDir)
     
     # Create folder for the backup user and backup
@@ -99,11 +99,11 @@ def backupData(customer_name, ticket_number, mountpoint, drivetype, users:list):
         os.mkdir(userBackupDir)
         if drivetype == 'ntfs' or drivetype == 'BitLocker':
             sourceDir = mountpoint + '/Users/' + user
-            rsync.rsync_run(['AppData', 'Cookies', 'OneDrive', 'Dropbox', 'Application Data'], sourceDir, userBackupDir)
+            rsync.rsync_run(['AppData', 'Cookies', 'OneDrive', 'Dropbox'], sourceDir, userBackupDir)
         elif drivetype == 'apfs':
             sourceDir = mountpoint + '/root' + user
             rsync.rsync_run(['Library'], sourceDir, userBackupDir)
         else:
             print('Something went wrong')
 
-backupData('abc',12345, '/dev/sdb5', 'ntfs', ['someuser'])
+backupData('Lawrence Bisong', '19264660', '/media/techstop/DAC62B66C62B41DD', 'ntfs', ['Lawrence Bisong'])

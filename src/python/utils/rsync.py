@@ -7,19 +7,23 @@ def getMS() -> int:
     return int(round(time.time() * 1000))
 
 def rsync_run(excludes:list, src, dest):
+
     # Check if dirs valid
     if os.path.exists(src):
         splitSrc = src.split('/')
         
         # Create dir if not exist
         if not os.path.exists(dest):
+            print('Created Dest')
             os.mkdir(dest)
         
-        excludeStr = ''
+        rsyncCMD = ['rsync', '-rhv', '--progress', '--update', '--safe-links']
         for exclude in excludes:
-            excludeStr = excludeStr + ' --exclude=' + exclude
+            rsyncCMD.append('--exclude=' + exclude)
+        rsyncCMD.append(src)
+        rsyncCMD.append(dest)
 
-        p = Popen(['rsync', '-rhv', '--progress', '--update', '--safe-links', excludeStr, src, dest], stdout=PIPE, stderr=STDOUT, text=True)
+        p = Popen(rsyncCMD, stdout=PIPE, stderr=STDOUT, text=True)
 
         # Log progress
         timeout_base = 0
@@ -42,6 +46,9 @@ def rsync_run(excludes:list, src, dest):
                 if line == 'sending incremental file list':
                     print('Reading directories')
                     timeout_base = getMS()
+                # Get the skip outputs
+                elif 'skipping' in line:
+                    print(line)
                 # 2nd to the last output
                 elif 'sent' in line:
                     sentSize = splitLine[1]
@@ -52,12 +59,13 @@ def rsync_run(excludes:list, src, dest):
                     totalSize = splitLine[3]
                     print('Total Size: ' + totalSize)
                 # Getting a new file
-                elif splitSrc[len(splitSrc) - 1] in splitLine[0]:
+                elif splitSrc[-1] in line:
                     # Reset timer
                     timeout_base = getMS()
 
                     print('Copying: ' + line)
-                else:
+                # Probably the progress?
+                elif 'B/s' in line:
                     copiedSize = splitLine[0]
                     progress = splitLine[1]
                     speed = splitLine[2]
@@ -66,8 +74,6 @@ def rsync_run(excludes:list, src, dest):
                     if len(splitLine) == 6:
                         numFileTransferred = int(re.search(r'\d+', splitLine[4]).group())
                         transferStat = list(map(int, re.findall(r'\d+', splitLine[5])))
-                        print('File #' + str(numFileTransferred) + ' There are ' + str(transferStat[0]) + '/' + str(transferStat[1]) + ' left')
+                        print('Copied File #' + str(numFileTransferred) + ' There are ' + str(transferStat[0]) + '/' + str(transferStat[1]) + ' left')
     else:
         raise FileNotFoundError('Source Directory Not Found!')
-
-rsync_run('', '/mnt/d/TestUser', '/home/samueljiang/testdestdir')
