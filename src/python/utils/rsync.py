@@ -6,7 +6,7 @@ import re
 def getMS() -> int:
     return int(round(time.time() * 1000))
 
-def rsync_run(exclude, src, dest):
+def rsync_run(excludes:list, src, dest):
     # Check if dirs valid
     if os.path.exists(src):
         splitSrc = src.split('/')
@@ -15,7 +15,11 @@ def rsync_run(exclude, src, dest):
         if not os.path.exists(dest):
             os.mkdir(dest)
         
-        p = Popen(['rsync', '-rhv', '--progress', '--update', '--exclude=' + exclude + '"', src, dest], stdout=PIPE, stderr=STDOUT, text=True)
+        excludeStr = ''
+        for exclude in excludes:
+            excludeStr = excludeStr + ' --exclude=' + exclude
+
+        p = Popen(['rsync', '-rhv', '--progress', '--update', '--safe-links', excludeStr, src, dest], stdout=PIPE, stderr=STDOUT, text=True)
 
         # Log progress
         timeout_base = 0

@@ -37,7 +37,7 @@ def listDrive():
 
 
 # Unlocks and mounts a BitLocker encrypted drives
-def mountBitLocker(partition, password):
+def mountBitLocker(partition, password) -> str:
     if hd_test.isSudo():
         # Check and make necessary directories
         bitlockerDir = '/mnt/bitlocker'
@@ -83,8 +83,11 @@ def mountBitLocker(partition, password):
                 print(output)
             else:
                 print(partition + ' Mounted!')
+                return driveMountDir
     else:
         print('This process requires sudo privileges!')
+    
+    return ''
 
 
 # Unmounts all BitLocker encrypted drives
@@ -110,11 +113,12 @@ def unmountBitLocker():
 
 
 # Mount un-encrypted Windows drive
-def mountWindows(partition, mountpoint):
+def mountWindows(partition, mountpoint) -> str:
     if hd_test.isSudo():
         driveMountDir = '/media/windows'
         if mountpoint != '':
             print('Drive already mounted automatically!')
+            return mountpoint
         else:
             # Create dir if does not exist
             if not os.path.isdir(driveMountDir):
@@ -136,9 +140,11 @@ def mountWindows(partition, mountpoint):
                 print(output)
             else:
                 print(partition + ' Mounted!')
+                return driveMountDir
     else:
         print('This process requires sudo privileges!')
 
+    return ''
 
 def unmountWindows(mountpoint):
     if hd_test.isSudo():
@@ -174,7 +180,7 @@ def fileVaultOn(partition):
         return False
 
 
-def mountAPFS(partition, password=''):
+def mountAPFS(partition, password='') -> str:
     if hd_test.isSudo():
         # Create dir if does not exist
         driveMountDir = '/media/mac'
@@ -190,7 +196,7 @@ def mountAPFS(partition, password=''):
         
         # Drive not encrypted
         if not fileVaultOn():
-            result = run(['apfs-utils', partition, driveMountDir], capture_output=True)
+            result = run(['apfs-fuse','-o', 'allow_other', partition, driveMountDir], capture_output=True)
             output = result.stdout.decode('utf-8').splitlines()
             # Something is wrong with the mounting if there is an output
             if len(output) != 0:
@@ -205,10 +211,12 @@ def mountAPFS(partition, password=''):
                 # Something is wrong with the mounting if there is an output
                 if len(output) != 0:
                     print(output)
-
+                else:
+                    return driveMountDir
     else:
         print('This process requires sudo privileges!')
 
+    return ''
 
 def unmountAPFS():
     if hd_test.isSudo():
@@ -228,17 +236,18 @@ def unmountAPFS():
 
 
 # Main mounting method for all mountings
-def mountPart(partition, driveType, mountpoint = '', password = ''):
+def mountPart(partition, driveType, mountpoint = '', password = '') -> str:
     # If the drive is BitLocker locked
     if driveType == 'BitLocker':
-        mountBitLocker(partition, password)
+        return mountBitLocker(partition, password)
     # Most likely an un-encrypted Windows drive
     elif driveType == 'ntfs':
-        mountWindows(partition, mountpoint)
+        return mountWindows(partition, mountpoint)
     # An MacOS drive
     elif driveType == 'apfs':
-        mountAPFS(partition, password)
-
+        return mountAPFS(partition, password)
+    
+    return ''
 
 def unmountPart(driveType, mountpoint=''):
     # If the drive is BitLocker locked
