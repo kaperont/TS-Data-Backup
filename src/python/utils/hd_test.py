@@ -84,6 +84,7 @@ def shortDST(drive, gui=False) -> bool:
                 break
             else:
                 print('Something is wrong')
+                return False
 
             # Don't check too often
             time.sleep(5)
@@ -132,6 +133,7 @@ def longDST(drive):
                 break
             else:
                 print('Something is wrong')
+                return
 
             # Don't check too often
             time.sleep(5)
