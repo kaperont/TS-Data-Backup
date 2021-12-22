@@ -6,6 +6,7 @@ import time
 import pdb
 
 from checkDiskProgressWindow import CheckDiskProgressWindow
+from driveListWindow import DriveListWindow
 from subprocess import run
 
 gi.require_version("Gtk", "3.0")
@@ -29,18 +30,33 @@ class NewCustomerWindow(object):
     def openProgressBar(self, src):
         self.progressWindow = CheckDiskProgressWindow()
 
+    def on_SelectPartitionButton_clicked(self, object):
+        dialog = DriveListWindow(self.window)
+        response = dialog.run()
+        
+        if response == Gtk.ResponseType.OK:
+            result = dialog.get_result()
+            print(result)
+            srcPartitionEntry = self.builder.get_object("SrcPartitionForm")
+            srcPartitionEntry.set_text(result[-1])
+            print("The OK button was clicked")
+        elif response == Gtk.ResponseType.CANCEL:
+            print("The Cancel button was clicked")
+        
+        dialog.destroy()
+
     # Start Backup Button has been clicked
     def on_StartBackupButton_clicked(self, object, data=None):
 
         # Grab the input objects
         customerNameEntry = self.builder.get_object("CustomerNameForm")
         ticketNumberEntry = self.builder.get_object("TicketNumberForm")
-        srcDirectoryEntry = self.builder.get_object("SrcDirectoryForm")
+        srcDirectoryEntry = self.builder.get_object("SrcPartitionForm")
 
         # Extract the data from the input objects
         customerName = customerNameEntry.get_text()
         ticketNumber = ticketNumberEntry.get_text()
-        srcDirectory = srcDirectoryEntry.get_filename()
+        srcDirectory = srcDirectoryEntry.get_text()
 
         # If one of the fields is empty, do nothing and return
         if not customerName or not ticketNumber or not srcDirectory:

@@ -5,8 +5,6 @@ import sys
 import time
 import gi
 
-from utils.progress_bar import ProgressBarWindow
-
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
 
@@ -47,11 +45,8 @@ def checkDeviceHealth(drive) -> str:
 
 
 # Run's the short HD test
-def shortDST(drive, gui=False) -> bool:
+def shortDST(drive) -> bool:
     if isSudo():
-        if gui:
-            win = ProgressBarWindow()
-            win.show_all()
         result = run(['smartctl', '--test=short', drive], capture_output=True)
         lines = result.stdout.decode('utf-8').splitlines()
         # print(lines)
@@ -77,8 +72,6 @@ def shortDST(drive, gui=False) -> bool:
                 # LBA means Logic Block Address
                 LBAFirstError = columns[10]
                 print(statusMsg + ' with percent left: ' + remaining)
-                if gui:
-                    win.pulse()
                 
             # 10 means complete
             elif len(columns) == 10:
@@ -88,18 +81,13 @@ def shortDST(drive, gui=False) -> bool:
                 # LBA means Logic Block Address
                 LBAFirstError = columns[9]
                 print(statusMsg + ' with percent left: ' + remaining)
-                if gui:
-                    win.pulse()
                 break
             else:
                 print('Something is wrong')
 
             # Don't check too often
             time.sleep(5)
-        
-        if gui:
-            #win.destroy()
-            None
+            
         return True
     else:
         print("Must have super user privileges. Try running with sudo?")
