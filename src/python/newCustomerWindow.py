@@ -4,6 +4,7 @@ from utils.mount_drive import mountPart, unmountPart
 # Window Imports
 from checkDiskProgressWindow import CheckDiskProgressWindow
 from driveListWindow import DriveListWindow
+from keyWindows import APFSKeyDialog, BitLockerKeyDialog
 
 # GTK Imports
 import gi
@@ -12,6 +13,51 @@ from gi.repository import Gtk as gtk
 
 
 class NewCustomerWindow(object):
+
+
+    def unlockBitlocker(self, partitionPath):
+        bitlockerDialog = BitLockerKeyDialog(self.window)
+        bitlockerResponse = bitlockerDialog.run()
+
+        if bitlockerResponse == gtk.ResponseType.OK:
+            # If response is OK, grab the result
+            self.bitlockerKey = bitlockerDialog.get_result()
+
+            # Check for valid result
+            if self.bitlockerKey is None:
+                print("No BitLocker Key Provided")
+                return None
+            
+            print("BitLocker Key: %s" % self.bitlockerKey)
+        elif bitlockerResponse == gtk.ResponseType.CANCEL:
+            print("No BitLocker Key Provided")
+            return None
+
+        bitlockerDialog.destroy()
+        self.encrypted = True
+        return mountPart(partition=partitionPath, driveType="BitLocker", password=self.bitlockerKey)
+
+    def unlockAPFS(self, partitionPath):
+        apfsDialog = APFSKeyDialog(self.window)
+        apfsResponse = apfsDialog.run()
+
+        if apfsResponse == gtk.ResponseType.OK:
+            # If response is OK, grab the result
+            self.apfsKey = apfsDialog.get_result()
+
+            # Check for valid result
+            if self.apfsKey is None:
+                print("No BitLocker Key Provided")
+                return None
+            
+            print("BitLocker Key: %s" % self.apfsKey)
+        elif apfsResponse == gtk.ResponseType.CANCEL:
+            print("No BitLocker Key Provided")
+            return None
+
+        apfsDialog.destroy()
+        self.encrypted = True
+        return mountPart(partition=partitionPath, driveType="apfs", password=self.apfsKey)
 
     def on_SelectPartitionButton_clicked(self, object):
         # Open the drive selection dialog
@@ -40,13 +86,28 @@ class NewCustomerWindow(object):
                 if type == '':
                     print('There is no filesystem!')
                     return
+
                 elif type == 'BitLocker':
-                    mountpoint = mountPart(partition=partitionPath, driveType=type, password='682198-010989-363242-107250-566379-316712-080817-593428')
-                    self.encrypted = True
+                    # Destroy old dialog
+                    dialog.destroy()
+                    # Unlock bitlocker and retrieve mountpoint
+                    mountpoint = self.unlockBitlocker(partitionPath)
+                    # Verify bitlocker key was successful and mountpoint was set
+                    if not mountpoint:
+                        return
+
                 elif type == 'apfs':
-                    self.encrypted = True
+                    # Destroy old dialog
+                    dialog.destroy()
+                    # Unlock APFS and retrieve mountpoint
+                    mountpoint = self.unlockAPFS(partitionPath)
+                    # Verify APFS key was successful and mountpoint was set
+                    if not mountpoint:
+                        return
+
                 elif type == 'ntfs':
-                    self.encrypted = True
+                    # self.encrypted = True
+                    None
                 
                 if mountpoint == '':
                     print("There is no mountpoint!")
@@ -63,7 +124,8 @@ class NewCustomerWindow(object):
             # If response is CANCEL, continue
             print("No Partition was selected")
         
-        dialog.destroy()
+        if not self.encrypted:
+            dialog.destroy()
 
     # Start Backup Button has been clicked
     def on_StartBackupButton_clicked(self, object, data=None):
