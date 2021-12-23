@@ -59,10 +59,9 @@ def rsync_run(excludes:list, src, dest):
                     totalSize = splitLine[3]
                     print('Total Size: ' + totalSize)
                 # Getting a new file
-                elif splitSrc[-1] in line:
+                elif splitSrc[-1] in line and 'B/s' not in line:
                     # Reset timer
                     timeout_base = getMS()
-
                     print('Copying: ' + line)
                 # Probably the progress?
                 elif 'B/s' in line:
@@ -70,7 +69,7 @@ def rsync_run(excludes:list, src, dest):
                     progress = splitLine[1]
                     speed = splitLine[2]
                     timeLeft = splitLine[3]
-                    print('Copied: ' + copiedSize + ' Percentage Completed: ' + progress + ' Rate: ' + speed + ' Estimated Time Left: ' + timeLeft)
+                    print('Copying: ' + copiedSize + ' Percentage Completed: ' + progress + ' Rate: ' + speed + ' Estimated Time Left: ' + timeLeft, end='')
                     if len(splitLine) == 6:
                         numFileTransferred = int(re.search(r'\d+', splitLine[4]).group())
                         transferStat = list(map(int, re.findall(r'\d+', splitLine[5])))
