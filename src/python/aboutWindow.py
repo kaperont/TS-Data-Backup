@@ -1,9 +1,11 @@
+# GTK Imports
 import gi
-
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
 
+
 class AboutWindow(object):
+
     # Destruction of Window
     def onDestroy(self, object, data=None):
         self.window.destroy()

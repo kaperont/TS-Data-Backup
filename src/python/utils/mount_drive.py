@@ -1,6 +1,9 @@
 from subprocess import run
 import os
-import hd_test
+try:
+    import hd_test
+except:
+    import utils.hd_test as hd_test
 
 # Lists all the drives and partitions using lsblk
 def listDrive():
