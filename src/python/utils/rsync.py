@@ -69,7 +69,7 @@ def rsync_run(excludes:list, src, dest):
                     progress = splitLine[1]
                     speed = splitLine[2]
                     timeLeft = splitLine[3]
-                    print('Copying: ' + copiedSize + ' Percentage Completed: ' + progress + ' Rate: ' + speed + ' Estimated Time Left: ' + timeLeft, end='')
+                    print('Copying: ' + copiedSize + ' Percentage Completed: ' + progress + ' Rate: ' + speed + ' Estimated Time Left: ' + timeLeft, end='\r')
                     if len(splitLine) == 6:
                         numFileTransferred = int(re.search(r'\d+', splitLine[4]).group())
                         transferStat = list(map(int, re.findall(r'\d+', splitLine[5])))
