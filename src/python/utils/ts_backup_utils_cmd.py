@@ -94,11 +94,11 @@ def dataBackup():
         if driveSelected[4] == 'BitLocker':
             bitlockerKey = input('Please enter the BitLocker key: ')
             print('Mounting drive...', end='\r')
-            mountpoint = mount_drive.mountPart('/dev/' + driveSelected[3], driveSelected[4], driveSelected[4], bitlockerKey)
+            mountpoint = mount_drive.mountPart('/dev/' + driveSelected[3], driveSelected[4], driveSelected[6], bitlockerKey)
         elif driveSelected[4] == 'apfs' and mount_drive.fileVaultOn('/dev/' + driveSelected[3]):
             fileVaultKey = input('Please enter the FileVault recovery key: ')
             print('Mounting drive...', end='\r')
-            mountpoint = mount_drive.mountPart('/dev/' + driveSelected[3], driveSelected[4], driveSelected[4], fileVaultKey)
+            mountpoint = mount_drive.mountPart('/dev/' + driveSelected[3], driveSelected[4], driveSelected[6], fileVaultKey)
         else:
             print('Mounting drive...', end='\r')
             mountpoint = mount_drive.mountPart('/dev/' + driveSelected[3], driveSelected[4], driveSelected[4])
