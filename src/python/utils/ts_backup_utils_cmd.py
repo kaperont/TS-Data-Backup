@@ -142,6 +142,7 @@ def dataBackup():
         data_backup.backupData(customer_name, ticket_id, mountpoint, driveSelected[4], usersSelected)
     else:
         data_backup.backupData(customer_name, ticket_id, mountpoint, driveSelected[4], usersSelected, verbose=False)
+    print()
 
 
 
