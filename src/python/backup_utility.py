@@ -1,14 +1,17 @@
-import gi
-
+# Window Imports
 from mainWindow import MainWindow
 
+# GTK Imports
+import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
 
+
 class App:
+
     def __init__(self):
         self.tickets = {}
-        self.main = MainWindow(self.tickets)
+        self.main = MainWindow()
     
     def push_ticket(self, ticket, name, drive):
         self.tickets[ticket] = [ticket, name, drive]

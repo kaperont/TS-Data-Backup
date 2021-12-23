@@ -1,28 +1,43 @@
-import gi
+# General Imports
+from utils.mount_drive import listDrive
 
+# GTK Imports
+import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk as gtk
-from utils.mount_drive import listDrive
+
 
 class DriveListWindow(gtk.Dialog):
 
     def on_response(self, widget, response_id):
         selected = self.partitionBox.get_selected_row()
         text = selected.get_child().get_text()
-        print(text)
+        arr = text.split()
+        print(arr)
+        if arr[0] == "Partition:":
+            print('here')
+            self.response = gtk.ResponseType.CANCEL
+            return
+
+        self.response = gtk.ResponseType.OK
         self.partitionArr = text.split()
 
     def get_result(self):
-        return self.partitionArr
+        if self.response == gtk.ResponseType.OK:
+            return self.partitionArr
+        elif self.response == gtk.ResponseType.CANCEL:
+            return []
     
     def __init__(self, parent):
         gtk.Dialog.__init__(self, "Drive List", parent, 0,
             (gtk.STOCK_CANCEL, gtk.ResponseType.CANCEL,
              gtk.STOCK_OK, gtk.ResponseType.OK))
+
         # Initialize Window
-        # super().__init__(title="Drive List")
         self.set_size_request(600, 350)
         self.connect("response", self.on_response)
+        self.set_title("Select Partition")
+        #self.set_type("popup")
         self.partitionArr = []
 
         # Set the main box
@@ -37,20 +52,48 @@ class DriveListWindow(gtk.Dialog):
         self.partitionBox = gtk.ListBox()
         box.add(self.partitionBox)
 
+        # Insert descriptions
+        header = "Partition:   Size:   Filesystem:   Mountpoint:"
+        style = "<span font-family='consolas'>" + header + "</span>"
+        headerLabel = gtk.Label(label=header)
+        headerLabel.set_markup(style)
+        headerLabel.set_alignment(0,0)
+        self.partitionBox.insert(headerLabel,0)
+        # header = "------------------------------------------"
+        # style = "<span font-family='consolas'>" + header + "</span>"
+        # headerLabel = gtk.Label(label=header)
+        # headerLabel.set_markup(style)
+        # headerLabel.set_alignment(0,0)
+        # self.partitionBox.insert(headerLabel,1)
+
+        self.partitionBox.get_row_at_index(0).selectable = False
+
         # Loop through each drive to insert
         for drive in self.drives.keys():
             
             # Insert each partition to the ListBox
             partitions = self.drives[drive]['parts']
-            i=0
+            i=2
             for partition in partitions.keys():
 
                 # Gather information from each partition
+                j=0
                 content = ""
                 parts = partitions[partition]
                 for part in parts:
                     content += parts[part]
-                    content += "   "
+
+                    if j == 0:
+                        content = content.ljust(13)
+                    elif j == 1:
+                        content = content.ljust(21)
+                    elif j == 2:
+                        content = content.ljust(35)
+                    elif j == 3:
+                        content = content.ljust(66)
+                
+                    j+=1
+
                 
                 # Create a label for each partition then insert to the ListBox
                 style = "<span font-family='consolas'>" + content + "</span>"
@@ -61,18 +104,4 @@ class DriveListWindow(gtk.Dialog):
                     
                 i+=1
 
-        # Crerate a button for submitting which partition to use
-        # self.submitButton = gtk.Button("Submit")
-        # self.submitButton.set_margin_left(150)
-        # self.submitButton.set_margin_right(150)
-        # self.submitButton.set_margin_bottom(100)
-        # self.submitButton.connect("clicked", self.on_SubmitButton_clicked)
-        # box.add(self.submitButton)
-
         self.show_all()
-
-
-# win = DriveListWindow()
-# win.connect("destroy", gtk.main_quit)
-# win.show_all()
-# gtk.main()

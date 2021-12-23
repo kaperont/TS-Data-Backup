@@ -1,18 +1,17 @@
-from subprocess import run
+# General Imports
 import os
 import re
-import sys
 import time
+from subprocess import run
+
+# GTK Imports
 import gi
-import pdb
-import threading
-
-# from python.utils.hd_test import shortDST
-
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk
 
+
 class CheckDiskProgressWindow(object):
+
     # Destruction of Window
     def onDestroy(self, object, data=None):
         self.window.destroy()
