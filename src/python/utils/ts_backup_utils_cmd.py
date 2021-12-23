@@ -2,7 +2,10 @@ import os
 import hd_test
 import mount_drive
 import data_backup
+import rsync
 import texttable
+
+from python.utils.rsync import rsync_run
 
 def clearDisplay():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -85,23 +88,64 @@ def dataBackup():
         driveSelection = input('Please enter the drive partition you wish to backup: ')
         if driveSelection == '..':
             return
-    driveSelected = driveList[int(driveSelection) - 1]
+    driveSelected = driveList[int(driveSelection)]
 
     clearDisplay()
+    mountpoint = ''
+    while mountpoint == '':
+        if driveSelected[4] == 'BitLocker':
+            bitlockerKey = input('Please enter the BitLocker key: ')
+            print('Mounting drive...', end='\r')
+            mountpoint = mount_drive.mountPart('/dev/' + driveSelected[3], driveSelected[4], driveSelected[4], bitlockerKey)
+        elif driveSelected[4] == 'apfs' and mount_drive.fileVaultOn('/dev/' + driveSelected[3]):
+            fileVaultKey = input('Please enter the FileVault recovery key: ')
+            print('Mounting drive...', end='\r')
+            mountpoint = mount_drive.mountPart('/dev/' + driveSelected[3], driveSelected[4], driveSelected[4], fileVaultKey)
+        else:
+            print('Mounting drive...', end='\r')
+            mountpoint = mount_drive.mountPart('/dev/' + driveSelected[3], driveSelected[4], driveSelected[4])
+        
+        if mountpoint == '':
+            print('Mounting failed. Please Try Again')
+            input()
+        else:
+            print('Drive mounted at ' + mountpoint + ' sucessfully!')
+    input('Hit [Enter] to Continue')
 
     clearDisplay()
     print('Customer Name:   ' + customer_name)
     print('Ticket Number:   ' + ticket_id)
-    print('Selected Drive:  ' + driveSelection[3] + ' (' + driveSelection[5] + ' ' + driveSelection[4] + ')')
+    print('Selected Drive:  ' + driveSelected[3] + ' (' + driveSelected[5] + ' ' + driveSelected[4] + ')')
     print('----')
     print('Select the users that you would like to backup')
-    users = data_backup.scanUsers()
+    users = data_backup.scanUsers(driveSelected[4], mountpoint)
     count = 1
     for user in users:
-        print('(' + count + ') ' + user)
+        print('(' + str(count) + ') ' + user)
         count += 1
-    print('(' + count + ') ' + user)
+    print('(' + str(count) + ') All')
+    print('\n (To select multiple users, enter the numbers separated with space.)')
+    selection = input('Enter Selection(s): ')
+    usersSelected = []
+    if selection == str(count):
+        usersSelected = users
+    else:
+        selectionNums = selection.split()
+        for num in selectionNums:
+            usersSelected.append(users[int(num) - 1])
     
+    clearDisplay()
+    print('You have selected user(s):\n' + str(usersSelected))
+    print('\nThe utility is ready to start the data backup process. Do you want a verbose output or a simplified output?')
+    print('(1) Verbose (With all the details concerning the backup)')
+    print('(2) Simplified (A progress bar with single line outputs')
+    select = input('\nEnter Selection: ')
+    if select == 1:
+        data_backup.backupData(customer_name, ticket_id, mountpoint, driveSelected[4], usersSelected)
+    else:
+        
+
+
 
 def backup_utils():
     if not hd_test.isSudo():

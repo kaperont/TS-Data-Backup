@@ -43,27 +43,27 @@ def mountBitLocker(partition, password) -> str:
         driveMountDir = '/media/bitlockervol'
         # Create dir if does not exist
         if not os.path.isdir(bitlockerDir):
-            print(bitlockerDir + ' not found. Creating')
+            print('MOUNT DRIVE: ' + bitlockerDir + ' not found. Creating')
             os.mkdir(bitlockerDir)
         # Make sure nothing has been mounted already
         elif len(os.listdir(bitlockerDir)) != 0:
-            print('Something had been mounted to ' + bitlockerDir + '. Cleaning.')
+            print('MOUNT DRIVE: ' + 'Something had been mounted to ' + bitlockerDir + '. Cleaning.')
             result = run(['umount', bitlockerDir], capture_output=True)
             output = result.stdout.decode('utf-8').splitlines()
             # Something is wrong with the unmount if there is an output
             if len(output) != 0:
-                print(output)
+                print('MOUNT DRIVE: ' + output)
         # Create dir if does not exist
         if not os.path.isdir(driveMountDir):
-            print(driveMountDir + ' does not exist. Creating')
+            print('MOUNT DRIVE: ' + driveMountDir + ' does not exist. Creating')
             os.mkdir(driveMountDir)
         elif len(os.listdir(driveMountDir)) != 0:
-            print('Something had been mounted to ' + driveMountDir + '. Cleaning.')
+            print('MOUNT DRIVE: ' + 'Something had been mounted to ' + driveMountDir + '. Cleaning.')
             result = run(['umount', driveMountDir], capture_output=True)
             output = result.stdout.decode('utf-8').splitlines()
             # Something is wrong with the unmount if there is an output
             if len(output) != 0:
-                print(output)
+                print('MOUNT DRIVE: ' + output)
             
         
         # Decrypt drive
@@ -72,19 +72,19 @@ def mountBitLocker(partition, password) -> str:
         # Something is wrong if the output is not empty
         if len(output) != 0:
             # Password incorrect error could be handled here
-            print(output)
+            print('MOUNT DRIVE: ' + output)
         else:
             # Mount the dislocked file
             result = run(['mount', '-o', 'loop,rw', bitlockerDir + '/dislocker-file', driveMountDir], capture_output=True)
             output = result.stdout.decode('utf-8').splitlines()
             if len(output) != 0:
                 # This is most likely an error related to Windows hibernation file
-                print(output)
+                print('MOUNT DRIVE: ' + output)
             else:
-                print(partition + ' Mounted!')
+                print('MOUNT DRIVE: ' + partition + ' Mounted!')
                 return driveMountDir
     else:
-        print('This process requires sudo privileges!')
+        print('MOUNT DRIVE: ' + 'This process requires sudo privileges!')
     
     return ''
 
@@ -92,7 +92,7 @@ def mountBitLocker(partition, password) -> str:
 # Unmounts all BitLocker encrypted drives
 def unmountBitLocker():
     if hd_test.isSudo():
-        print('Unmounting Bitlocker')
+        print('MOUNT DRIVE: ' + 'Unmounting Bitlocker')
         bitlockerDir = '/mnt/bitlocker'
         driveMountDir = '/media/bitlockervol'
         # Unmount the bitlocker volume first. REQUIRED!!!
@@ -100,15 +100,15 @@ def unmountBitLocker():
         output = result.stdout.decode('utf-8').splitlines()
         # Something is wrong with the unmount if there is an output
         if len(output) != 0:
-            print(output)
+            print('MOUNT DRIVE: ' + output)
         # Unmount the bitlocker
         result = run(['umount', bitlockerDir], capture_output=True)
         output = result.stdout.decode('utf-8').splitlines()
         # Something is wrong with the unmount if there is an output
         if len(output) != 0:
-            print(output)
+            print('MOUNT DRIVE: ' + output)
     else:
-        print('This process requires sudo privileges!')
+        print('MOUNT DRIVE: ' + 'This process requires sudo privileges!')
 
 
 # Mount un-encrypted Windows drive
@@ -116,32 +116,32 @@ def mountWindows(partition, mountpoint) -> str:
     if hd_test.isSudo():
         driveMountDir = '/media/windows'
         if mountpoint != '':
-            print('Drive already mounted automatically!')
+            print('MOUNT DRIVE: ' + 'Drive already mounted automatically!')
             return mountpoint
         else:
             # Create dir if does not exist
             if not os.path.isdir(driveMountDir):
-                print(driveMountDir + ' does not exist. Creating')
+                print('MOUNT DRIVE: ' + driveMountDir + ' does not exist. Creating')
                 os.mkdir(driveMountDir)
             elif len(os.listdir(driveMountDir)) != 0:
-                print('Something had been mounted to ' + driveMountDir + '. Cleaning.')
+                print('MOUNT DRIVE: ' + 'Something had been mounted to ' + driveMountDir + '. Cleaning.')
                 result = run(['umount', driveMountDir], capture_output=True)
                 output = result.stdout.decode('utf-8').splitlines()
                 # Something is wrong with the unmount if there is an output
                 if len(output) != 0:
-                    print(output)
+                    print('MOUNT DRIVE: ' + output)
             
             # Mount windows drive
             result = run(['mount', '-o', 'loop,rw', partition, driveMountDir], capture_output=True)
             output = result.stdout.decode('utf-8').splitlines()
             if len(output) != 0:
                 # This is most likely an error related to Windows hibernation file
-                print(output)
+                print('MOUNT DRIVE: ' + output)
             else:
-                print(partition + ' Mounted!')
+                print('MOUNT DRIVE: ' + partition + ' Mounted!')
                 return driveMountDir
     else:
-        print('This process requires sudo privileges!')
+        print('MOUNT DRIVE: ' + 'This process requires sudo privileges!')
 
     return ''
 
@@ -153,20 +153,20 @@ def unmountWindows(mountpoint):
             output = result.stdout.decode('utf-8').splitlines()
             # Something is wrong with the unmount if there is an output
             if len(output) != 0:
-                print(output)
+                print('MOUNT DRIVE: ' + output)
         else:
             # Create dir if does not exist
             if not os.path.isdir(driveMountDir):
-                print(driveMountDir + ' does not exist. Creating')
+                print('MOUNT DRIVE: ' + driveMountDir + ' does not exist. Creating')
                 os.mkdir(driveMountDir)
             elif len(os.listdir(driveMountDir)) != 0:
                 result = run(['umount', driveMountDir], capture_output=True)
                 output = result.stdout.decode('utf-8').splitlines()
                 # Something is wrong with the unmount if there is an output
                 if len(output) != 0:
-                    print(output)
+                    print('MOUNT DRIVE: ' + output)
     else:
-        print('This process requires sudo privileges!')
+        print('MOUNT DRIVE: ' + 'This process requires sudo privileges!')
 
 
 def fileVaultOn(partition):
@@ -184,36 +184,38 @@ def mountAPFS(partition, password='') -> str:
         # Create dir if does not exist
         driveMountDir = '/media/mac'
         if not os.path.isdir(driveMountDir):
-            print(driveMountDir + ' does not exist. Creating')
+            print('MOUNT DRIVE: ' + driveMountDir + ' does not exist. Creating')
             os.mkdir(driveMountDir)
         elif len(os.listdir(driveMountDir)) != 0:
             result = run(['umount', driveMountDir], capture_output=True)
             output = result.stdout.decode('utf-8').splitlines()
             # Something is wrong with the unmount if there is an output
             if len(output) != 0:
-                print(output)
+                print('MOUNT DRIVE: ' + output)
         
         # Drive not encrypted
-        if not fileVaultOn():
+        if not fileVaultOn(partition):
             result = run(['apfs-fuse','-o', 'allow_other', partition, driveMountDir], capture_output=True)
             output = result.stdout.decode('utf-8').splitlines()
             # Something is wrong with the mounting if there is an output
             if len(output) != 0:
-                print(output)
+                print('MOUNT DRIVE: ' + output)
+            else:
+                return driveMountDir
         # Drive encrypted
         else:
             if password == '':
-                print('No password provided!')
+                print('MOUNT DRIVE: ' + 'No password provided!')
             else:
                 result = run(['apfs-utils', '-r', password, partition, driveMountDir], capture_output=True)
                 output = result.stdout.decode('utf-8').splitlines()
                 # Something is wrong with the mounting if there is an output
                 if len(output) != 0:
-                    print(output)
+                    print('MOUNT DRIVE: ' + output)
                 else:
                     return driveMountDir
     else:
-        print('This process requires sudo privileges!')
+        print('MOUNT DRIVE: ' + 'This process requires sudo privileges!')
 
     return ''
 
@@ -222,16 +224,16 @@ def unmountAPFS():
         driveMountDir = '/media/mac'
         # Create dir if does not exist
         if not os.path.isdir(driveMountDir):
-            print(driveMountDir + ' does not exist. Creating')
+            print('MOUNT DRIVE: ' + driveMountDir + ' does not exist. Creating')
             os.mkdir(driveMountDir)
         elif len(os.listdir(driveMountDir)) != 0:
             result = run(['umount', driveMountDir], capture_output=True)
             output = result.stdout.decode('utf-8').splitlines()
             # Something is wrong with the unmount if there is an output
             if len(output) != 0:
-                print(output)
+                print('MOUNT DRIVE: ' + output)
     else:
-        print('This process requires sudo privileges!')
+        print('MOUNT DRIVE: ' + 'This process requires sudo privileges!')
 
 
 # Main mounting method for all mountings
