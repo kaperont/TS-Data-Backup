@@ -55,7 +55,7 @@ def scanUsers(drivetype, mountpoint) -> list:
     return userList
 
 
-def backupData(customer_name, ticket_number, mountpoint, drivetype, users:list, verbose:bool):
+def backupData(customer_name, ticket_number, mountpoint, drivetype, users:list) -> str:
     # TODO: Make those reconfigurable via GUI
     BACKUP_SERVER_PART_1 = 'sda2'
     BACKUP_SERVER_PART_2 = 'sdb2'
@@ -116,18 +116,14 @@ def backupData(customer_name, ticket_number, mountpoint, drivetype, users:list, 
         os.mkdir(userBackupDir)
         if drivetype == 'ntfs' or drivetype == 'BitLocker':
             sourceDir = mountpoint + '/Users/' + user
-            if verbose:
-                rsync.rsync_run_verbose(['AppData', 'Cookies', 'OneDrive', 'Dropbox'], sourceDir, userBackupDir)
-            else:
-                rsync.rsync_run_simple(['AppData', 'Cookies', 'OneDrive', 'Dropbox'], sourceDir, userBackupDir)
+            rsync.rsync_run_verbose(['AppData', 'Cookies', 'OneDrive', 'Dropbox'], sourceDir, userBackupDir)
         elif drivetype == 'apfs':
             sourceDir = mountpoint + '/root/Users/' + user
-            if verbose:
-                rsync.rsync_run_verbose(['Library'], sourceDir, userBackupDir)
-            else:
-                rsync.rsync_run_simple(['Library'], sourceDir, userBackupDir)
+            rsync.rsync_run_verbose(['Library'], sourceDir, userBackupDir)
         else:
             print('Something went wrong')
+    
+    return absBackupDir
 
 # backupData('Lawrence Bisong', '19264660', '/media/techstop/DAC62B66C62B41DD', 'ntfs', ['Lawrence Bisong'])
 # users = scanUsers('apfs', '/media/samueljiang/mac')

@@ -1,14 +1,15 @@
 import os
+import platform
+from subprocess import Popen
 import hd_test
 import mount_drive
 import data_backup
-import rsync
 import texttable
 
 def clearDisplay():
     os.system('cls' if os.name == 'nt' else 'clear')
-    print('=== Welcome to TechStop Backup Utilities ==='.center(os.get_terminal_size().columns))
-    print('By Kyle Peront and Samuel Jiang'.center(os.get_terminal_size().columns))
+    print('=== Cedarville TechStop Backup Utilities ==='.center(os.get_terminal_size().columns))
+    print('By Kyle Peront and Samuel Jiang (Dec 2021)'.center(os.get_terminal_size().columns))
     print('ver 1.0.0'.center(os.get_terminal_size().columns))
     print()
     print()
@@ -18,7 +19,7 @@ def selectFunction() -> int:
     clearDisplay()
     print('Please select the functions below by typing in their corresponding numbers:')
     print('(1) Data Backup')
-    print('(2) Hard Drive Test')
+    print('(2) Hard Drive Test (Only works for un-encrypted drives)')
     print('(3) Mount Drive(s)')
     print()
     print()
@@ -27,11 +28,7 @@ def selectFunction() -> int:
     return int(input('Enter Selection: '))
 
 
-def selectDrive(customer_name, ticket_id) -> list:
-    clearDisplay()
-    print('Customer Name:   ' + customer_name)
-    print('Ticket Number:   ' + ticket_id)
-    print('----')
+def selectDrive() -> list:
     mountedDrives = mount_drive.listDrive()
     table = texttable.Texttable(os.get_terminal_size().columns)
     driveTable = [['#', 'DRIVE', 'DRIVE SIZE', 'PARTITION', 'PARTITION TYPE', 'PARTITION SIZE', 'MOUNTPOINT']]
@@ -63,31 +60,7 @@ def selectDrive(customer_name, ticket_id) -> list:
     return driveTable
 
 
-def dataBackup():
-    clearDisplay()
-    print('Please provide the information requested below. You can input .. to return to main menu.')
-    customer_name = str(input('Please enter the customer\'s name: '))
-    if customer_name == '..':
-        return
-    
-    clearDisplay()
-    print('Customer Name:   ' + customer_name)
-    print('----')
-    print('Please provide the information requested below. You can input .. to return to main menu.')
-    ticket_id = str(input('Please enter the ticket number from TDX: '))
-    if ticket_id == '..':
-        return
-    
-    driveSelection = 'r'
-    driveList = []
-    while driveSelection == 'r':
-        driveList = selectDrive(customer_name, ticket_id)
-        print('Hit r to refresh the list. You can input .. to return to main menu.')
-        driveSelection = input('Please enter the drive partition you wish to backup: ')
-        if driveSelection == '..':
-            return
-    driveSelected = driveList[int(driveSelection)]
-
+def mountDrive(driveSelected) -> str:
     clearDisplay()
     mountpoint = ''
     while mountpoint == '':
@@ -109,6 +82,39 @@ def dataBackup():
         else:
             print('Drive mounted at ' + mountpoint + ' sucessfully!')
     input('Hit [Enter] to Continue')
+    return mountpoint
+
+
+def dataBackup():
+    clearDisplay()
+    print('Please provide the information requested below. You can input .. to return to main menu.')
+    customer_name = str(input('Please enter the customer\'s name: '))
+    if customer_name == '..':
+        return
+    
+    clearDisplay()
+    print('Customer Name:   ' + customer_name)
+    print('----')
+    print('Please provide the information requested below. You can input .. to return to main menu.')
+    ticket_id = str(input('Please enter the ticket number from TDX: '))
+    if ticket_id == '..':
+        return
+    
+    driveSelection = 'r'
+    driveList = []
+    while driveSelection == 'r':
+        clearDisplay()
+        print('Customer Name:   ' + customer_name)
+        print('Ticket Number:   ' + ticket_id)
+        print('----')
+        driveList = selectDrive()
+        print('Hit r to refresh the list. You can input .. to return to main menu.')
+        driveSelection = input('Please enter the drive partition you wish to backup: ')
+        if driveSelection == '..':
+            return
+    driveSelected = driveList[int(driveSelection)]
+
+    mountpoint = mountDrive(driveSelected)
 
     clearDisplay()
     print('Customer Name:   ' + customer_name)
@@ -134,18 +140,95 @@ def dataBackup():
     
     clearDisplay()
     print('You have selected user(s):\n' + str(usersSelected))
-    print('\nThe utility is ready to start the data backup process. Do you want a verbose output or a simplified output?')
-    print('(1) Verbose (With all the details concerning the backup)')
-    print('(2) Simplified (A progress bar with single line outputs')
-    select = input('\nEnter Selection: ')
-    if select == '1':
-        print('Selected Verbose')
-        data_backup.backupData(customer_name, ticket_id, mountpoint, driveSelected[4], usersSelected, True)
-    else:
-        print('Selected Simple')
-        data_backup.backupData(customer_name, ticket_id, mountpoint, driveSelected[4], usersSelected, False)
+    print('\nThe utility is ready to start the data backup process.')
+    input('\nHit [Enter] to start')
+    backupDir = data_backup.backupData(customer_name, ticket_id, mountpoint, driveSelected[4], usersSelected)
+
+    print('\n\n Backup Completed to ' + backupDir)
+    input('Hit [Enter] to return to main menu')
+
+
+def hardDriveTest():
+    driveSelection = 'r'
+    driveTable = []
+    while driveSelection == 'r':
+        clearDisplay()
+        print('Please select the drive to be tested: ')
+        mountedDrives = mount_drive.listDrive()
+        table = texttable.Texttable(os.get_terminal_size().columns)
+        driveTable = [['#', 'DRIVE', 'DRIVE SIZE']]
+        count = 1
+        for drive in mountedDrives.values():
+            if drive != None:
+                driveList = []
+                driveList.append(str(count))
+                count += 1
+                driveList.append(drive.get('name'))
+                driveList.append(drive.get('size'))
+                driveTable.append(driveList)
+            
+        
+        table.add_rows(driveTable)
+        print(table.draw())
+        print('Hit r to refresh the list. You can input .. to return to main menu.')
+        driveSelection = input('Please enter the drive: ')
+        if driveSelection == '..':
+            return
+    driveSelected = driveTable[int(driveSelection)]
+
+    clearDisplay()
+    print('Select the test you would like to perform')
+    print('(1) Check Device Health')
+    print('(2) Short DST')
+    print('(3) Long DST')
+    print('Please provide the information requested below. You can input .. to return to main menu.')
+    testSelected = input('Please enter the test: ')
+    if testSelected == '1':
+        clearDisplay()
+        print('Checking Device Health')
+        hd_test.checkDeviceHealth('/dev/' + driveSelected[1])
+    elif testSelected == '2':
+        clearDisplay()
+        print('Performing Short DST')
+        hd_test.shortDST('/dev/' + driveSelected[1])
+    elif testSelected == '3':
+        clearDisplay()
+        print('Performing Long DST')
+        hd_test.longDST('/dev/' + driveSelected[1])
+
     input()
 
+def open_file(path):
+    if platform.system() == "Windows":
+        os.startfile(path)
+    elif platform.system() == "Darwin":
+        Popen(["open", path])
+    else:
+        Popen(["xdg-open", path])
+
+
+def mountDrives():
+    driveSelection = 'r'
+    driveList = []
+    while driveSelection == 'r':
+        clearDisplay()
+        print('Please select the drive that you would like to mount:')
+        driveList = selectDrive()
+        print('Hit r to refresh the list. You can input .. to return to main menu.')
+        driveSelection = input('Please enter the drive partition you wish to mount: ')
+        if driveSelection == '..':
+            return
+    driveSelected = driveList[int(driveSelection)]
+    
+    mountpoint = mountDrive(driveSelected)
+
+    clearDisplay()
+    open_file(mountpoint)
+    text = ''
+    while text != 'unmount':
+        text = input('Enter "unmount" to unmount ' + driveSelected[3] + ' (' + driveSelected[5] + ' ' + driveSelected[4] + '): ')
+    
+    mount_drive.unmountPart(driveSelected[4], mountpoint)
 
 
 def backup_utils():
@@ -157,6 +240,10 @@ def backup_utils():
         selection = selectFunction()
         if selection == 1:
             dataBackup()
+        elif selection == 2:
+            hardDriveTest()
+        elif selection == 3:
+            mountDrives()
 
 if __name__=="__main__":
     backup_utils()
