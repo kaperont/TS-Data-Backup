@@ -5,8 +5,6 @@ import data_backup
 import rsync
 import texttable
 
-from python.utils.rsync import rsync_run
-
 def clearDisplay():
     os.system('cls' if os.name == 'nt' else 'clear')
     print('=== Welcome to TechStop Backup Utilities ==='.center(os.get_terminal_size().columns))
