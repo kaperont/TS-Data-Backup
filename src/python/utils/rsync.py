@@ -1,4 +1,4 @@
-from subprocess import Popen, PIPE, STDOUT
+from subprocess import Popen, PIPE, STDOUT, run
 import os
 import time
 import re
@@ -6,7 +6,7 @@ import re
 def getMS() -> int:
     return int(round(time.time() * 1000))
 
-def rsync_run(excludes:list, src, dest):
+def rsync_run_verbose(excludes:list, src, dest):
 
     # Check if dirs valid
     if os.path.exists(src):
@@ -17,7 +17,7 @@ def rsync_run(excludes:list, src, dest):
             print('Created Dest')
             os.mkdir(dest)
         
-        rsyncCMD = ['rsync', '-rhv', '--progress', '--update', '--safe-links']
+        rsyncCMD = ['rsync', '-rhv', '--progress', '--stats', '--update', '--safe-links']
         for exclude in excludes:
             rsyncCMD.append('--exclude=' + exclude)
         rsyncCMD.append(src)
@@ -52,7 +52,11 @@ def rsync_run(excludes:list, src, dest):
                 # 2nd to the last output
                 elif 'sent' in line:
                     sentSize = splitLine[1]
-                    avgSpeed = splitLine[6] + ' ' + splitLine[7]
+                    if len(line) >= 8:
+                        avgSpeed = splitLine[6] + ' ' + splitLine[7]
+                    else:
+                        print('UNKNOWN???')
+                        input(line)
                     print('Sent: ' + sentSize + '; Speed: ' + avgSpeed)
                 # Last output
                 elif 'total size' in line:
@@ -74,5 +78,7 @@ def rsync_run(excludes:list, src, dest):
                         numFileTransferred = int(re.search(r'\d+', splitLine[4]).group())
                         transferStat = list(map(int, re.findall(r'\d+', splitLine[5])))
                         print('\nCopied File #' + str(numFileTransferred) + ' There are ' + str(transferStat[0]) + '/' + str(transferStat[1]) + ' left')
+                else:
+                    print(line)
     else:
         raise FileNotFoundError('Source Directory Not Found!')

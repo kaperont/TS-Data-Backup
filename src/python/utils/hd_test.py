@@ -29,7 +29,6 @@ def checkDeviceHealth(drive) -> str:
     if isSudo():
         result = run(['smartctl', '-H', drive], capture_output=True)
         lines = result.stdout.decode('utf-8').splitlines()
-
         # There is a SMART Status not supported if there are 8 lines
         if len(lines) == 8:
             overallHealth = lines[5].split(':')
@@ -60,34 +59,27 @@ def shortDST(drive, gui=False) -> bool:
 
         remaining = ''
         while remaining != '00%':
-            result = run(['smartctl', '-l', 'selftest', drive], capture_output=True)
+            result = run(['smartctl', '-l', 'selective', drive], capture_output=True)
             # The most recent result should be at the very top
             results = result.stdout.decode('utf-8').splitlines()
-            columns = results[6].split()
-            # 11 columns means still in progress
-            if len(columns) == 11:
-                statusMsg = columns[5] + ' ' + columns[6] + ' ' + columns[7]
-                remaining = columns[8]
-                lifeInDriveRemain = columns[9]
-                # LBA means Logic Block Address
-                LBAFirstError = columns[10]
-                print(statusMsg + ' with percent left: ' + remaining)
-                
-            # 10 means complete
-            elif len(columns) == 10:
-                statusMsg = columns[4] + ' ' + columns[5] + ' ' + columns[6]
-                remaining = columns[7]
-                lifeInDriveRemain = columns[8]
-                # LBA means Logic Block Address
-                LBAFirstError = columns[9]
-                print(statusMsg + ' with percent left: ' + remaining)
-                break
-            else:
-                print('Something is wrong')
-                return False
+            for result in results:
+                columns = result.split()
+                if len(columns) == 7 and columns[0] == '1':
+                    statusMsg = columns[3]
+                    remaining = columns[4][1:]
+                    print(statusMsg + ' with percent left: ' + remaining, end='                                  \r')
+                    break
 
             # Don't check too often
             time.sleep(5)
+        
+        # Get the final result
+        result = run(['smartctl', '-l', 'selftest', drive], capture_output=True)
+        # The most recent result should be at the very top
+        results = result.stdout.decode('utf-8').splitlines()
+        columns = results[6].split()
+        statusMsg = columns[4] + ' ' + columns[5] + ' ' + columns[6]
+        print('\n' + statusMsg)
         
         return True
     else:
@@ -99,8 +91,6 @@ def longDST(drive):
     if isSudo():
         result = run(['smartctl', '--test=long', drive], capture_output=True)
         lines = result.stdout.decode('utf-8').splitlines()
-        print(lines)
-        print(len(lines))
         # Most likely successful if there are more than 4 lines
         if len(lines) == 10:
             estimateCompleteTime = int(re.search(r'\d+', lines[7]).group())
@@ -110,33 +100,27 @@ def longDST(drive):
         
         remaining = ''
         while remaining != '00%':
-            result = run(['smartctl', '-l', 'selftest', drive], capture_output=True)
+            result = run(['smartctl', '-l', 'selective', drive], capture_output=True)
             # The most recent result should be at the very top
             results = result.stdout.decode('utf-8').splitlines()
-            columns = results[6].split()
-            # 11 columns means still in progress
-            if len(columns) == 11:
-                statusMsg = columns[5] + ' ' + columns[6] + ' ' + columns[7]
-                remaining = columns[8]
-                lifeInDriveRemain = columns[9]
-                # LBA means Logic Block Address
-                LBAFirstError = columns[10]
-                print(statusMsg + ' with percent left: ' + remaining)
-            # 10 means complete
-            elif len(columns) == 10:
-                statusMsg = columns[4] + ' ' + columns[5] + ' ' + columns[6]
-                remaining = columns[7]
-                lifeInDriveRemain = columns[8]
-                # LBA means Logic Block Address
-                LBAFirstError = columns[9]
-                print(statusMsg + ' with percent left: ' + remaining)
-                break
-            else:
-                print('Something is wrong')
-                return
+            for result in results:
+                columns = result.split()
+                if len(columns) == 7 and columns[0] == '1':
+                    statusMsg = columns[3]
+                    remaining = columns[4][1:]
+                    print(statusMsg + ' with percent left: ' + remaining, end='                                  \r')
+                    break
 
             # Don't check too often
             time.sleep(5)
+        
+        # Get the final result
+        result = run(['smartctl', '-l', 'selftest', drive], capture_output=True)
+        # The most recent result should be at the very top
+        results = result.stdout.decode('utf-8').splitlines()
+        columns = results[6].split()
+        statusMsg = columns[4] + ' ' + columns[5] + ' ' + columns[6]
+        print('\n' + statusMsg)
     else:
         print("Must have super user privileges. Try running with sudo?")
 
