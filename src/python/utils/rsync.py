@@ -73,6 +73,6 @@ def rsync_run(excludes:list, src, dest):
                     if len(splitLine) == 6:
                         numFileTransferred = int(re.search(r'\d+', splitLine[4]).group())
                         transferStat = list(map(int, re.findall(r'\d+', splitLine[5])))
-                        print('Copied File #' + str(numFileTransferred) + ' There are ' + str(transferStat[0]) + '/' + str(transferStat[1]) + ' left')
+                        print('\nCopied File #' + str(numFileTransferred) + ' There are ' + str(transferStat[0]) + '/' + str(transferStat[1]) + ' left')
     else:
         raise FileNotFoundError('Source Directory Not Found!')
