@@ -138,9 +138,11 @@ def dataBackup():
     print('(1) Verbose (With all the details concerning the backup)')
     print('(2) Simplified (A progress bar with single line outputs')
     select = input('\nEnter Selection: ')
-    if select == 1:
+    if select == '1':
+        print('Selected Verbose')
         data_backup.backupData(customer_name, ticket_id, mountpoint, driveSelected[4], usersSelected, True)
     else:
+        print('Selected Simple')
         data_backup.backupData(customer_name, ticket_id, mountpoint, driveSelected[4], usersSelected, False)
     input()
 
