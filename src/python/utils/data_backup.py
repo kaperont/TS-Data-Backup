@@ -55,7 +55,7 @@ def scanUsers(drivetype, mountpoint) -> list:
     return userList
 
 
-def backupData(customer_name, ticket_number, mountpoint, drivetype, users:list, verbose = True):
+def backupData(customer_name, ticket_number, mountpoint, drivetype, users:list, verbose:bool):
     # TODO: Make those reconfigurable via GUI
     BACKUP_SERVER_PART_1 = 'sda2'
     BACKUP_SERVER_PART_2 = 'sdb2'
