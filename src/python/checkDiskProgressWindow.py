@@ -120,6 +120,7 @@ class CheckDiskProgressWindow(object):
                     break
                 else:
                     print('Something is wrong')
+                    return False
 
                 # Don't check too often
                 time.sleep(5)

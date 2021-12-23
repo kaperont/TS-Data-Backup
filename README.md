@@ -13,8 +13,11 @@ Cedarville University (c)
 
 ### Linux:
 - smartmontools
+- dislocker
+
 ### Python
 - GTK+ (gi)
+- texttable
 
 ## Build instructions
 

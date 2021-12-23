@@ -13,20 +13,15 @@ class DriveListWindow(gtk.Dialog):
         selected = self.partitionBox.get_selected_row()
         text = selected.get_child().get_text()
         arr = text.split()
-        print(arr)
-        if arr[0] == "Partition:":
-            print('here')
-            self.response = gtk.ResponseType.CANCEL
+        partName = arr[0]
+        if partName == "Partition:":
+            self.selectedPartition = None
             return
 
-        self.response = gtk.ResponseType.OK
-        self.partitionArr = text.split()
+        self.selectedPartition = self.drives[partName[0:-1]]['parts'][partName]
 
     def get_result(self):
-        if self.response == gtk.ResponseType.OK:
-            return self.partitionArr
-        elif self.response == gtk.ResponseType.CANCEL:
-            return []
+        return self.selectedPartition
     
     def __init__(self, parent):
         gtk.Dialog.__init__(self, "Drive List", parent, 0,
@@ -37,7 +32,7 @@ class DriveListWindow(gtk.Dialog):
         self.set_size_request(600, 350)
         self.connect("response", self.on_response)
         self.set_title("Select Partition")
-        self.partitionArr = []
+        self.selectedPartition = None
 
         # Set the main box
         box = self.get_content_area()

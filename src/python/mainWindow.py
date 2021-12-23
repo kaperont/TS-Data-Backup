@@ -41,8 +41,6 @@ class MainWindow(object):
             print("Ticket %s was added" % ticketNumber)
         elif response == gtk.ResponseType.CANCEL:
             print("No Ticket was added")
-        
-        dialog.destroy()
 
     def on_CheckBackupsButton_clicked(self, object):
         None
