@@ -37,7 +37,6 @@ class DriveListWindow(gtk.Dialog):
         self.set_size_request(600, 350)
         self.connect("response", self.on_response)
         self.set_title("Select Partition")
-        #self.set_type("popup")
         self.partitionArr = []
 
         # Set the main box
