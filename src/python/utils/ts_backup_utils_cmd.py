@@ -90,7 +90,7 @@ def dataBackup():
 
     clearDisplay()
     mountpoint = ''
-    print(driveSelected)
+    print(driveSelected[6])
     while mountpoint == '':
         if driveSelected[4] == 'BitLocker':
             bitlockerKey = input('Please enter the BitLocker key: ')
