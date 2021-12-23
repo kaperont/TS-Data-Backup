@@ -103,7 +103,7 @@ def rsync_run_simple(excludes:list, src, dest):
         rsyncStatCMD.append(dest)
         result = run(rsyncStatCMD, capture_output=True)
         output = result.stdout.decode('utf-8').splitlines()
-        print(result)
+        print(output)
 
         # p = Popen(rsyncCMD, stdout=PIPE, stderr=STDOUT, text=True)
 
