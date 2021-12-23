@@ -1,6 +1,7 @@
 import os
 import hd_test
 import mount_drive
+import data_backup
 import texttable
 
 def clearDisplay():
@@ -25,28 +26,14 @@ def selectFunction() -> int:
     return int(input('Enter Selection: '))
 
 
-def dataBackup():
-    clearDisplay()
-    print('Please provide the information requested below. You can input .. to return to main menu.')
-    customer_name = str(input('Please enter the customer\'s name: '))
-    if customer_name == '..':
-        return
-    
-    clearDisplay()
-    print('Customer Name:   ' + customer_name)
-    print('----')
-    print('Please provide the information requested below. You can input .. to return to main menu.')
-    ticket_id = str(input('Please enter the ticket number from TDX: '))
-    if ticket_id == '..':
-        return
-    
+def selectDrive(customer_name, ticket_id) -> list:
     clearDisplay()
     print('Customer Name:   ' + customer_name)
     print('Ticket Number:   ' + ticket_id)
     print('----')
     mountedDrives = mount_drive.listDrive()
     table = texttable.Texttable(os.get_terminal_size().columns)
-    driveTable = [['#', 'DRIVE', 'DRIVE SIZE', 'PARTITION', 'PARTITION TYPE', 'PARTITION SIZE', 'MOUNTPOINT', 'SUPPORTED?']]
+    driveTable = [['#', 'DRIVE', 'DRIVE SIZE', 'PARTITION', 'PARTITION TYPE', 'PARTITION SIZE', 'MOUNTPOINT']]
     count = 1
     for drive in mountedDrives.values():
         if drive != None:
@@ -67,16 +54,54 @@ def dataBackup():
                     partitionList.append(part.get('size'))
                     partitionList.append(part.get('mountpoint'))
                     if type == 'ntfs' or type == 'BitLocker' or type == 'apfs':
-                        partitionList.append('Yes')
-                    else:
-                        partitionList.append('No')
-                    driveTable.append(partitionList)
+                        driveTable.append(partitionList)
         
     
     table.add_rows(driveTable)
     print(table.draw())
-    driveSelection = input('Please enter the drive partition you wish to backup: ')
+    return driveTable
 
+
+def dataBackup():
+    clearDisplay()
+    print('Please provide the information requested below. You can input .. to return to main menu.')
+    customer_name = str(input('Please enter the customer\'s name: '))
+    if customer_name == '..':
+        return
+    
+    clearDisplay()
+    print('Customer Name:   ' + customer_name)
+    print('----')
+    print('Please provide the information requested below. You can input .. to return to main menu.')
+    ticket_id = str(input('Please enter the ticket number from TDX: '))
+    if ticket_id == '..':
+        return
+    
+    driveSelection = 'r'
+    driveList = []
+    while driveSelection == 'r':
+        driveList = selectDrive(customer_name, ticket_id)
+        print('Hit r to refresh the list. You can input .. to return to main menu.')
+        driveSelection = input('Please enter the drive partition you wish to backup: ')
+        if driveSelection == '..':
+            return
+    driveSelected = driveList[int(driveSelection) - 1]
+
+    clearDisplay()
+
+    clearDisplay()
+    print('Customer Name:   ' + customer_name)
+    print('Ticket Number:   ' + ticket_id)
+    print('Selected Drive:  ' + driveSelection[3] + ' (' + driveSelection[5] + ' ' + driveSelection[4] + ')')
+    print('----')
+    print('Select the users that you would like to backup')
+    users = data_backup.scanUsers()
+    count = 1
+    for user in users:
+        print('(' + count + ') ' + user)
+        count += 1
+    print('(' + count + ') ' + user)
+    
 
 def backup_utils():
     if not hd_test.isSudo():

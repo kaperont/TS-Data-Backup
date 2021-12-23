@@ -36,7 +36,24 @@ def calcFolderSize(mountpoint):
     result = run(['df', mountpoint], capture_output=True)
     df = result.stdout.decode('utf-8').splitlines()[1].split()
     return int(df[2])
-    
+
+
+def scanUsers(drivetype, mountpoint) -> list:
+    userList = []
+    if drivetype == 'apfs':
+        usersDir = mountpoint + '/root/Users'
+        dirs = os.listdir(usersDir)
+        for dir in dirs:
+            if dir[0] != '.' and dir != 'Guest' and dir != 'Shared' and os.path.isdir(usersDir + '/' + dir) and not os.path.islink(usersDir + '/' + dir):
+                userList.append(dir)
+    else:
+        usersDir = mountpoint + '/Users'
+        dirs = os.listdir(usersDir)
+        for dir in dirs:
+            if dir[0] != '.' and dir != 'Default' and dir != 'Public' and os.path.isdir(usersDir + '/' + dir) and not os.path.islink(usersDir + '/' + dir):
+                userList.append(dir)
+    return userList
+
 
 def backupData(customer_name, ticket_number, mountpoint, drivetype, users:list):
     # TODO: Make those reconfigurable via GUI
@@ -101,9 +118,11 @@ def backupData(customer_name, ticket_number, mountpoint, drivetype, users:list):
             sourceDir = mountpoint + '/Users/' + user
             rsync.rsync_run(['AppData', 'Cookies', 'OneDrive', 'Dropbox'], sourceDir, userBackupDir)
         elif drivetype == 'apfs':
-            sourceDir = mountpoint + '/root' + user
+            sourceDir = mountpoint + '/root/Users/' + user
             rsync.rsync_run(['Library'], sourceDir, userBackupDir)
         else:
             print('Something went wrong')
 
-backupData('Lawrence Bisong', '19264660', '/media/techstop/DAC62B66C62B41DD', 'ntfs', ['Lawrence Bisong'])
+# backupData('Lawrence Bisong', '19264660', '/media/techstop/DAC62B66C62B41DD', 'ntfs', ['Lawrence Bisong'])
+# users = scanUsers('apfs', '/media/samueljiang/mac')
+# print(users)

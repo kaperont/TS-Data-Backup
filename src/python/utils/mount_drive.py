@@ -32,7 +32,6 @@ def listDrive():
                 driveDict[disk]['parts'][partName]["mountpoint"] = columns[4]
             else:
                 driveDict[disk]['parts'][partName]["mountpoint"] = ''
-    print(driveDict)
     return driveDict
 
 
