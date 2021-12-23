@@ -90,7 +90,6 @@ def dataBackup():
 
     clearDisplay()
     mountpoint = ''
-    print(driveSelected[6])
     while mountpoint == '':
         if driveSelected[4] == 'BitLocker':
             bitlockerKey = input('Please enter the BitLocker key: ')
@@ -102,7 +101,7 @@ def dataBackup():
             mountpoint = mount_drive.mountPart('/dev/' + driveSelected[3], driveSelected[4], mountpoint=driveSelected[6], password=fileVaultKey)
         else:
             print('Mounting drive...', end='\r')
-            mountpoint = mount_drive.mountPart('/dev/' + driveSelected[3], driveSelected[4], driveSelected[4])
+            mountpoint = mount_drive.mountPart('/dev/' + driveSelected[3], driveSelected[4], driveSelected[6])
         
         if mountpoint == '':
             print('Mounting failed. Please Try Again')

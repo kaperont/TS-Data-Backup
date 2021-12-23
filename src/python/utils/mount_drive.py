@@ -238,7 +238,6 @@ def unmountAPFS():
 
 # Main mounting method for all mountings
 def mountPart(partition, driveType, mountpoint = '', password = '') -> str:
-    print(mountpoint)
     # If the drive is BitLocker locked
     if driveType == 'BitLocker':
         return mountBitLocker(partition, password)
