@@ -1,7 +1,11 @@
 import os
-import hd_test
-import mount_drive
 import texttable
+try:
+    import hd_test
+    import mount_drive
+except:
+    import utils.hd_test
+    import utils.mount_drive
 
 def clearDisplay():
     os.system('cls' if os.name == 'nt' else 'clear')

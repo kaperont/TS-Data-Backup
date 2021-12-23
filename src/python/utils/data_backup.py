@@ -1,9 +1,15 @@
 from subprocess import run
 import os
 import datetime
-import mount_drive
-import hd_test
-import rsync
+
+try:
+    import mount_drive
+    import hd_test
+    import rsync
+except:
+    import utils.mount_drive
+    import utils.hd_test
+    import utils.rsync
 
 def driveExists(drivesMounted, partition, mountpoint) -> bool:
     drive = drivesMounted.get(partition[:3])
