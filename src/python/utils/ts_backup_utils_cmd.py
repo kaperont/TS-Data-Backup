@@ -139,7 +139,7 @@ def dataBackup():
     print('(2) Simplified (A progress bar with single line outputs')
     select = input('\nEnter Selection: ')
     if select == 1:
-        data_backup.backupData(customer_name, ticket_id, mountpoint, driveSelected[4], usersSelected)
+        data_backup.backupData(customer_name, ticket_id, mountpoint, driveSelected[4], usersSelected, verbose=True)
     else:
         data_backup.backupData(customer_name, ticket_id, mountpoint, driveSelected[4], usersSelected, verbose=False)
     input()
