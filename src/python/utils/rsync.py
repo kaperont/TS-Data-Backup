@@ -52,7 +52,11 @@ def rsync_run_verbose(excludes:list, src, dest):
                 # 2nd to the last output
                 elif 'sent' in line:
                     sentSize = splitLine[1]
-                    avgSpeed = splitLine[6] + ' ' + splitLine[7]
+                    if len(line) >= 8:
+                        avgSpeed = splitLine[6] + ' ' + splitLine[7]
+                    else:
+                        print('UNKNOWN???')
+                        input(line)
                     print('Sent: ' + sentSize + '; Speed: ' + avgSpeed)
                 # Last output
                 elif 'total size' in line:
