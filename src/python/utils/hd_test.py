@@ -29,7 +29,6 @@ def checkDeviceHealth(drive) -> str:
     if isSudo():
         result = run(['smartctl', '-H', drive], capture_output=True)
         lines = result.stdout.decode('utf-8').splitlines()
-        print(lines)
         # There is a SMART Status not supported if there are 8 lines
         if len(lines) == 8:
             overallHealth = lines[5].split(':')
