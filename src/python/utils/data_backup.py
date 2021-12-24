@@ -7,9 +7,14 @@ try:
     import hd_test
     import rsync
 except:
-    import utils.mount_drive
-    import utils.hd_test
-    import utils.rsync
+    try:
+        import utils.mount_drive as mount_drive
+        import utils.hd_test as hd_test
+        import utils.rsync as rsync
+    except:
+        import src.python.utils.mount_drive as mount_drive
+        import src.python.utils.hd_test as hd_test
+        import src.python.utils.rsync as rsync
 
 def driveExists(drivesMounted, partition, mountpoint) -> bool:
     drive = drivesMounted.get(partition[:3])

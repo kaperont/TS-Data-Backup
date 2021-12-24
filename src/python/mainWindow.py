@@ -1,7 +1,12 @@
+import os
+
 # Window Imports
-from newCustomerWindow import NewCustomerWindow
-# from temp import NewCustomerWindow
-from aboutWindow import AboutWindow
+try:
+    from newCustomerWindow import NewCustomerWindow
+    from aboutWindow import AboutWindow
+except:
+    from src.python.newCustomerWindow import NewCustomerWindow
+    from src.python.aboutWindow import AboutWindow
 
 # GTK Imports
 import gi
@@ -13,11 +18,11 @@ class MainWindow(object):
 
     ##### MENU BAR ITEMS #####
     def on_AboutItem_activate(self, object):
-        window = AboutWindow(self.tickets)
+        window = AboutWindow(self.gladefile)
 
     def on_NewFileItem_activate(self, object):
         print("Opening NewCustomerWindow")
-        dialog = NewCustomerWindow()
+        dialog = NewCustomerWindow(self.gladefile)
         response = dialog.run()
 
     def on_QuitFileItem_activate(self, object):
@@ -31,7 +36,7 @@ class MainWindow(object):
         print("Opening NewCustomerWindow")
 
         # dialog = NewCustomerWindow(self.window)
-        dialog = NewCustomerWindow()
+        dialog = NewCustomerWindow(self.gladefile)
         response = None
 
         if response == gtk.ResponseType.OK:
@@ -48,9 +53,11 @@ class MainWindow(object):
 
 
     ##### INITIALIZATION #####
-    def __init__(self):
+    def __init__(self, gladefile):
+        icon = os.path.dirname(os.path.abspath(__file__)) + '/../assets/drive.png'
+
         # Set the Gladefile to read from
-        self.gladefile = "../glade/backup-utility.glade"
+        self.gladefile = gladefile
 
         # Create the GTK Builder from the Gladefile
         self.builder = gtk.Builder()
@@ -61,6 +68,6 @@ class MainWindow(object):
         self.window = self.builder.get_object("MainWindow")
         self.window.connect("destroy", gtk.main_quit)
         self.window.set_title("TechStop Backup Utility")
-        self.window.set_icon_from_file('../assets/drive.png')
+        self.window.set_icon_from_file(icon)
         self.window.show()
     ##### INITIALIZATION #####

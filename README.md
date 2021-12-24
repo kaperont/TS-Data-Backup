@@ -16,9 +16,16 @@ Cedarville University (c)
 - dislocker
 
 ### Python
+- Python3
 - GTK+ (gi)
 - texttable
 
 ## Build instructions
 
-To run the application, descend into `./src/python` then execute the following command:<br>`python backup_utility.py`
+- Clone the repository (https://github.com/kperont/TS-Data-Backup.git)
+    - `git clone https://github.com/kperont/TS-Data-Backup.git`
+- Descend into the root directory
+    - `cd TS-Data-Backup`
+- Run the main script in either gui or terminal mode
+    - `python3 main.py gui`
+    - `python3 main.py terminal`

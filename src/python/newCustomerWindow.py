@@ -1,10 +1,18 @@
 # General Imports
-from utils.mount_drive import mountPart, unmountPart
+try:
+    from utils.mount_drive import mountPart, unmountPart
+except:
+    from src.python.utils.mount_drive import mountPart, unmountPart
 
 # Window Imports
-from checkDiskProgressWindow import CheckDiskProgressWindow
-from driveListWindow import DriveListWindow
-from keyWindows import APFSKeyDialog, BitLockerKeyDialog
+try:
+    from checkDiskProgressWindow import CheckDiskProgressWindow
+    from driveListWindow import DriveListWindow
+    from keyWindows import APFSKeyDialog, BitLockerKeyDialog
+except:
+    from src.python.checkDiskProgressWindow import CheckDiskProgressWindow
+    from src.python.driveListWindow import DriveListWindow
+    from src.python.keyWindows import APFSKeyDialog, BitLockerKeyDialog
 
 # GTK Imports
 import gi
@@ -169,9 +177,9 @@ class NewCustomerWindow(object):
         self.window.destroy()
 
     # NewCustomerWindow init
-    def __init__(self):
+    def __init__(self, gladefile):
         # Set the Gladefile to read from
-        self.gladefile = "../glade/backup-utility.glade"
+        self.gladefile = gladefile
 
         # Create the GTK Builder from the Gladefile
         self.builder = gtk.Builder()
@@ -184,7 +192,7 @@ class NewCustomerWindow(object):
         self.window.show()
 
         # Initialize the "global" variables
-        self.progressWindow = CheckDiskProgressWindow()
+        self.progressWindow = CheckDiskProgressWindow(self.gladefile)
         self.partition = None
         self.drivePath = '/dev/'
         self.encrypted = False

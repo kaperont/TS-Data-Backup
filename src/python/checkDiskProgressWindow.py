@@ -178,9 +178,9 @@ class CheckDiskProgressWindow(object):
 
 
     # CheckDiskProgressWindow init
-    def __init__(self):
+    def __init__(self, gladefile):
         # Set the Gladefile to read from
-        self.gladefile = "../glade/backup-utility.glade"
+        self.gladefile = gladefile
 
         # Create the GTK Builder from the Gladefile
         self.builder = Gtk.Builder()

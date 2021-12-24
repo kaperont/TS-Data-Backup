@@ -11,9 +11,9 @@ class AboutWindow(object):
         self.window.destroy()
 
     # AboutWindow init
-    def __init__(self, tickets):
+    def __init__(self, gladefile):
         # Set the Gladefile to read from
-        self.gladefile = "../glade/backup-utility.glade"
+        self.gladefile = gladefile
 
         # Create the GTK Builder from the Gladefile
         self.builder = Gtk.Builder()
@@ -23,4 +23,3 @@ class AboutWindow(object):
         # Locate the AboutWindow and display
         self.window = self.builder.get_object("AboutWindow")
         self.window.show()
-        self.tickets = tickets

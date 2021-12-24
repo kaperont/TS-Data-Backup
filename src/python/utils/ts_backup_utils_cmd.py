@@ -1,10 +1,16 @@
 import os
 import platform
 from subprocess import Popen
-import hd_test
-import mount_drive
-import data_backup
 import texttable
+
+try:    
+    import hd_test
+    import mount_drive
+    import data_backup
+except:
+    import src.python.utils.hd_test as hd_test
+    import src.python.utils.mount_drive as mount_drive
+    import src.python.utils.data_backup as data_backup
 
 def clearDisplay():
     os.system('cls' if os.name == 'nt' else 'clear')

@@ -3,7 +3,10 @@ import os
 try:
     import hd_test
 except:
-    import utils.hd_test as hd_test
+    try:
+        import utils.hd_test as hd_test
+    except:
+        import src.python.utils.hd_test as hd_test
 
 # Lists all the drives and partitions using lsblk
 def listDrive():

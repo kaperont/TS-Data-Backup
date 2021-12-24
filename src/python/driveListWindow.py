@@ -1,5 +1,8 @@
 # General Imports
-from utils.mount_drive import listDrive
+try:
+    from utils.mount_drive import listDrive
+except:
+    from src.python.utils.mount_drive import listDrive
 
 # GTK Imports
 import gi
