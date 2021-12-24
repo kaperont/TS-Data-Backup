@@ -1,3 +1,6 @@
+# General Imports
+import os
+
 # GTK Imports
 import gi
 gi.require_version("Gtk", "3.0")
@@ -33,7 +36,7 @@ class BitLockerKeyDialog(gtk.Dialog):
         screen = gdk.Screen.get_default()
         provider = gtk.CssProvider()
         style_context = gtk.StyleContext()
-        provider.load_from_path("../stylesheets/keyWindows.css")
+        provider.load_from_path(os.path.dirname(os.path.abspath(__file__)) + "/../stylesheets/keyWindows.css")
         style_context.add_provider_for_screen(screen, provider, gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
         # Set the main box
@@ -79,7 +82,7 @@ class APFSKeyDialog(gtk.Dialog):
         screen = gdk.Screen.get_default()
         provider = gtk.CssProvider()
         style_context = gtk.StyleContext()
-        provider.load_from_path("../stylesheets/keyWindows.css")
+        provider.load_from_path(os.path.dirname(os.path.abspath(__file__)) + "../stylesheets/keyWindows.css")
         style_context.add_provider_for_screen(screen, provider, gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
         # Set the main box

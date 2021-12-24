@@ -1,0 +1,29 @@
+/********************************
+Stylesheet for driveListWindow.py
+********************************/
+
+#header {
+    font-family: 'ubuntu mono bold';
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 25px;
+    margin-bottom:0px;
+}
+
+#boxHeaderLabel {
+    font-family: 'consolas';
+    font-weight: bold;
+    margin-top: 25px;
+    margin-left: 50px;
+}
+
+#listbox {
+    margin-top: 5px;
+    margin-left: 50px;
+    margin-right: 50px;
+    margin-bottom: 25px;
+}
+
+#partitionLabel {
+    font-family: 'consolas';
+}

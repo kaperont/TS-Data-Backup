@@ -857,7 +857,7 @@
                   <object class="GtkButton" id="CheckBackupsButton">
                     <property name="label" translatable="yes">Drive Maintenance</property>
                     <property name="width_request">200</property>
-                    <property name="height_request">53</property>
+                    <property name="height_request">50</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
