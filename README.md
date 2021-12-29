@@ -26,6 +26,6 @@ Cedarville University (c)
     - `git clone https://github.com/kperont/TS-Data-Backup.git`
 - Descend into the root directory
     - `cd TS-Data-Backup`
-- Run the main script in either gui or terminal mode
+- Run the main script in either gui or terminal mode (Default is GUI)
     - `python3 main.py gui`
     - `python3 main.py terminal`

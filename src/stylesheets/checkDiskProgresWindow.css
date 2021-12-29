@@ -1,0 +1,16 @@
+/****************************************
+Stylesheet for checkDiskProgressWindow.py
+****************************************/
+
+#terminalInput {
+    font-family: 'consolas';
+    font-size: 12px;
+    color: white;
+}
+
+#terminalViewport {
+    background-color: #444444;
+    border-width: 3px;
+    border-color: black;
+    border-radius: 5px;
+}

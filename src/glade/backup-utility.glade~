@@ -87,7 +87,7 @@
             <property name="height_request">80</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="label" translatable="yes">Date: 12/21/2021</property>
+            <property name="label" translatable="yes">Date: 12/2021</property>
             <attributes>
               <attribute name="font-desc" value="Ubuntu 12"/>
             </attributes>
@@ -410,11 +410,12 @@
               <object class="GtkButton" id="ProgressContinue">
                 <property name="label" translatable="yes">Continue</property>
                 <property name="visible">True</property>
+                <property name="sensitive">False</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="margin_left">100</property>
                 <property name="margin_right">100</property>
-                <property name="margin_bottom">10</property>
+                <property name="margin_bottom">25</property>
                 <signal name="clicked" handler="on_ProgressContinue_clicked" swapped="no"/>
               </object>
               <packing>
@@ -424,159 +425,59 @@
               </packing>
             </child>
             <child>
-              <object class="GtkBox" id="ProgressTerminal">
+              <object class="GtkScrolledWindow" id="TerminalWindow">
+                <property name="height_request">150</property>
                 <property name="can_focus">False</property>
+                <property name="margin_left">25</property>
+                <property name="margin_right">25</property>
                 <property name="margin_bottom">25</property>
-                <property name="orientation">vertical</property>
+                <property name="vscrollbar_policy">always</property>
+                <property name="shadow_type">etched-out</property>
                 <child>
-                  <object class="GtkLabel">
+                  <object class="GtkViewport" id="TerminalViewport">
+                    <property name="name">terminalViewport</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">routine in progress with percent left: 90%</property>
-                    <attributes>
-                      <attribute name="font-desc" value="Ubuntu Mono Bold 11"/>
-                    </attributes>
+                    <property name="vscroll_policy">natural</property>
+                    <property name="shadow_type">etched-out</property>
+                    <child>
+                      <object class="GtkBox" id="ProgressTerminal">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                      </object>
+                    </child>
                   </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">routine in progress with percent left: 80%</property>
-                    <attributes>
-                      <attribute name="font-desc" value="Ubuntu Mono Bold 11"/>
-                    </attributes>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">routine in progress with percent left: 70%</property>
-                    <attributes>
-                      <attribute name="font-desc" value="Ubuntu Mono Bold 11"/>
-                    </attributes>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">2</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">routine in progress with percent left: 60%</property>
-                    <attributes>
-                      <attribute name="font-desc" value="Ubuntu Mono Bold 11"/>
-                    </attributes>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">3</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">routine in progress with percent left: 50%</property>
-                    <attributes>
-                      <attribute name="font-desc" value="Ubuntu Mono Bold 11"/>
-                    </attributes>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">4</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">routine in progress with percent left: 40%</property>
-                    <attributes>
-                      <attribute name="font-desc" value="Ubuntu Mono Bold 11"/>
-                    </attributes>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">5</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">routine in progress with percent left: 30%</property>
-                    <attributes>
-                      <attribute name="font-desc" value="Ubuntu Mono Bold 11"/>
-                    </attributes>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">6</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">routine in progress with percent left: 20%</property>
-                    <attributes>
-                      <attribute name="font-desc" value="Ubuntu Mono Bold 11"/>
-                    </attributes>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">7</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">routine in progress with percent left: 10%</property>
-                    <attributes>
-                      <attribute name="font-desc" value="Ubuntu Mono Bold 11"/>
-                    </attributes>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">8</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">routine in progress with percent left: 10%</property>
-                    <attributes>
-                      <attribute name="font-desc" value="Ubuntu Mono Bold 11"/>
-                    </attributes>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">9</property>
-                  </packing>
                 </child>
               </object>
               <packing>
@@ -594,6 +495,12 @@
         </child>
       </object>
     </child>
+  </object>
+  <object class="GtkImage" id="ExitImage">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="margin_right">5</property>
+    <property name="stock">gtk-close</property>
   </object>
   <object class="GtkImage" id="NewCustomerImage">
     <property name="visible">True</property>
@@ -744,6 +651,22 @@
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">_View</property>
                 <property name="use_underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu" id="ViewMenu">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <child>
+                      <object class="GtkImageMenuItem" id="DriveMaintenanceItem">
+                        <property name="label">gtk-preferences</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="use_underline">True</property>
+                        <property name="use_stock">True</property>
+                        <property name="always_show_image">True</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
               </object>
             </child>
             <child>
@@ -837,7 +760,7 @@
                     <property name="label" translatable="yes">New Customer</property>
                     <property name="name">AddCustomerButton</property>
                     <property name="width_request">200</property>
-                    <property name="height_request">50</property>
+                    <property name="height_request">53</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
@@ -857,7 +780,7 @@
                   <object class="GtkButton" id="CheckBackupsButton">
                     <property name="label" translatable="yes">Drive Maintenance</property>
                     <property name="width_request">200</property>
-                    <property name="height_request">50</property>
+                    <property name="height_request">53</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
@@ -873,152 +796,24 @@
                     <property name="position">1</property>
                   </packing>
                 </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
-            <property name="position">2</property>
-          </packing>
-        </child>
-      </object>
-    </child>
-  </object>
-  <object class="GtkDialog" id="NewCustomerDialog">
-    <property name="name">New Customer</property>
-    <property name="can_focus">False</property>
-    <property name="window_position">center</property>
-    <property name="destroy_with_parent">True</property>
-    <property name="type_hint">dialog</property>
-    <property name="attached_to">MainWindow</property>
-    <property name="startup_id">New Customer</property>
-    <child type="titlebar">
-      <placeholder/>
-    </child>
-    <child internal-child="vbox">
-      <object class="GtkBox">
-        <property name="name">New Customer</property>
-        <property name="can_focus">False</property>
-        <property name="orientation">vertical</property>
-        <property name="spacing">2</property>
-        <child internal-child="action_area">
-          <object class="GtkButtonBox">
-            <property name="can_focus">False</property>
-            <property name="layout_style">end</property>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">False</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="NewCustomerLabel2">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="margin_top">25</property>
-            <property name="margin_bottom">20</property>
-            <property name="label" translatable="yes">New Customer</property>
-            <attributes>
-              <attribute name="font-desc" value="Ubuntu Mono Bold 20"/>
-            </attributes>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkBox" id="NewCustomerForm2">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="orientation">vertical</property>
-            <child>
-              <object class="GtkBox" id="CustomerNameContainer2">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkLabel" id="CustomerNameLabel2">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Customer Name</property>
-                    <attributes>
-                      <attribute name="font-desc" value="Umpush Bold 12"/>
-                    </attributes>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkEntry" id="CustomerNameForm2">
+                  <object class="GtkButton" id="ExitButton">
+                    <property name="label" translatable="yes">Exit Program</property>
+                    <property name="width_request">200</property>
+                    <property name="height_request">53</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="margin_left">50</property>
-                    <property name="margin_right">50</property>
-                    <property name="margin_bottom">10</property>
+                    <property name="receives_default">True</property>
+                    <property name="halign">center</property>
+                    <property name="margin_top">15</property>
+                    <property name="image">ExitImage</property>
+                    <property name="always_show_image">True</property>
+                    <signal name="clicked" handler="on_ExitButton_clicked" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkBox" id="TicketNumberContainer2">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="orientation">vertical</property>
-                <child>
-                  <object class="GtkLabel" id="TicketNumberLabel2">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Ticket Number</property>
-                    <attributes>
-                      <attribute name="font-desc" value="Umpush Bold 12"/>
-                    </attributes>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkEntry" id="TicketNumberForm2">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="margin_left">50</property>
-                    <property name="margin_right">50</property>
-                    <property name="margin_bottom">10</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
+                    <property name="position">2</property>
                   </packing>
                 </child>
               </object>
@@ -1026,90 +821,6 @@
                 <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="position">1</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkBox" id="SrcDirectoryContainer2">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="orientation">vertical</property>
-                <child>
-                  <object class="GtkLabel" id="SrcPartitionLabel2">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Source Partition</property>
-                    <attributes>
-                      <attribute name="font-desc" value="Umpush Bold 12"/>
-                    </attributes>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkBox" id="SrcPartitionBox2">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <child>
-                      <object class="GtkEntry" id="SrcPartitionForm2">
-                        <property name="name">SrcPartitionForm</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="margin_left">50</property>
-                      </object>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkButton" id="SelectPartitionButton2">
-                        <property name="label" translatable="yes">Select Partition</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
-                        <property name="margin_left">10</property>
-                        <property name="margin_right">50</property>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="StartBackupButton2">
-                <property name="label" translatable="yes">Start Backup</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="margin_left">145</property>
-                <property name="margin_right">145</property>
-                <property name="margin_top">20</property>
-                <property name="margin_bottom">25</property>
-                <property name="always_show_image">True</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">3</property>
               </packing>
             </child>
           </object>

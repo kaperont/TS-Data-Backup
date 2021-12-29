@@ -1,90 +1,81 @@
 # General Imports
 import os
+import pdb
 import re
 import time
+import threading
 from subprocess import run
 
 # GTK Imports
 import gi
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk
+from gi.repository import Gtk as gtk
+from gi.repository import Gdk as gdk
+from gi.repository import GLib
 
 
-class CheckDiskProgressWindow(object):
+def progress_main(drive):
+    gladefile = os.path.dirname(os.path.abspath(__file__)) + '/../glade/backup-utility.glade'
 
-    # Destruction of Window
-    def onDestroy(self, object, data=None):
-        self.window.destroy()
+    # Create the GTK Builder from the Gladefile
+    builder = gtk.Builder()
+    builder.add_from_file(gladefile)
 
-    def destroy(self):
-        self.window.destroy()
+    # Grab some objects
+    window = builder.get_object("CheckDiskProgressWindow")
+    progressbar = builder.get_object("CheckDiskProgressBar")
+    terminalContainer = builder.get_object("TerminalWindow")
+    terminal = builder.get_object("ProgressTerminal")
+    progressContinue = builder.get_object("ProgressContinue")
+    progressShowMore = builder.get_object("ProgressShowMore")
 
-    def show(self):
-        self.window.show()
+    # Load Stylesheet
+    screen = gdk.Screen.get_default()
+    provider = gtk.CssProvider()
+    style_context = gtk.StyleContext()
+    provider.load_from_path(os.path.dirname(os.path.abspath(__file__)) + "/../stylesheets/checkDiskProgresWindow.css")
+    style_context.add_provider_for_screen(screen, provider, gtk.STYLE_PROVIDER_PRIORITY_APPLICATION)
 
-    def increment(self):
-        val = self.progressbar.get_fraction()
-        val += 0.10
-        self.progressbar.set_fraction(val)
-
-
-    def on_ProgressContinue_clicked(self, object):
+    # Handle ProgressContinue button handler
+    def on_ProgressContinue_clicked(object):
         print("Closing Progress Bar")
-        self.window.close()
-        # self.shortDST('/dev/sdb')
+        window.close()
 
-    def on_ProgressShowMore_toggled(self, object):
+    # Handle ProgressShowMore toggler handler
+    def on_ProgressShowMore_toggled(object):
         show_text = object.get_active()
-        print(show_text)
         if show_text:
-            self.terminal.set_visible(True)
+            terminalContainer.set_visible(True)
+            window.resize(400,350)
         else:
-            self.terminal.set_visible(False)
+            terminalContainer.set_visible(False)
+            window.resize(400,200)
 
+    # Update Progress Bar
+    def update_progess(msg):
+        # Update Progress Bar
+        val = progressbar.get_fraction()
+        val += 0.10001
+        progressbar.set_fraction(val)
 
-    # Check if the script is running with su privileges
-    def isSudo(self) -> bool:
-        return os.geteuid() == 0
+        # Update terminal
+        label = gtk.Label(label=msg)
+        label.set_name("terminalInput")
+        label.set_visible(True)
+        print('msg:   %s' % msg)
+        terminal.pack_start(label, True, True, 5)
 
+        # Enable the continue button
+        if val > 0.99:
+            progressContinue.set_sensitive(True)
 
-    # Cancels all running tests
-    def cancelTask(self, drive):
-        result = run(['smartctl', '-X', drive], capture_output=True)
-        lines = result.stdout.decode('utf-8').splitlines()
-        if len(lines) == 6:
-            status = lines[5]
-        else:
-            print('Something is wrong')
-
-
-    # Checks the reported S.M.A.R.T. health
-    def checkDeviceHealth(self, drive) -> str:
-        if self.isSudo():
-            result = run(['smartctl', '-H', drive], capture_output=True)
-            lines = result.stdout.decode('utf-8').splitlines()
-
-            # There is a SMART Status not supported if there are 8 lines
-            if len(lines) == 8:
-                overallHealth = lines[5].split(':')
-                status = overallHealth[1].strip()
-                print(status + ' using an Attribute check.\n' + lines[4])
-            # Proper output would be 6 lines
-            elif len(lines) == 6:
-                overallHealth = lines[4].split(':')
-                status = overallHealth[1].strip()
-                print(status)
-            else:
-                print('Something is wrong...')
-
+        return False
 
     # Run's the short HD test
-    def shortDST(self, drive) -> bool:
+    def shortDST(drive) -> bool:
         if os.geteuid() == 0:
-
             result = run(['smartctl', '--test=short', drive], capture_output=True)
             lines = result.stdout.decode('utf-8').splitlines()
-            # print(lines)
-            # print(len(lines))
             # Most likely successful if there are more than 4 lines
             if len(lines) == 10:
                 estimateCompleteTime = int(re.search(r'\d+', lines[7]).group())
@@ -93,101 +84,70 @@ class CheckDiskProgressWindow(object):
                 print('estimate complete date: ' + estimateCompleteDate)
 
             remaining = ''
+            previous = '100%'
+            i=0
             while remaining != '00%':
                 result = run(['smartctl', '-l', 'selftest', drive], capture_output=True)
                 # The most recent result should be at the very top
                 results = result.stdout.decode('utf-8').splitlines()
-                columns = results[6].split()
-                # 11 columns means still in progress
-                if len(columns) == 11:
-                    statusMsg = columns[5] + ' ' + columns[6] + ' ' + columns[7]
-                    remaining = columns[8]
-                    lifeInDriveRemain = columns[9]
-                    # LBA means Logic Block Address
-                    LBAFirstError = columns[10]
-                    print(statusMsg + ' with percent left: ' + remaining)
-                    self.increment()
-                    
-                # 10 means complete
-                elif len(columns) == 10:
-                    statusMsg = columns[4] + ' ' + columns[5] + ' ' + columns[6]
-                    remaining = columns[7]
-                    lifeInDriveRemain = columns[8]
-                    # LBA means Logic Block Address
-                    LBAFirstError = columns[9]
-                    print(statusMsg + ' with percent left: ' + remaining)
-                    self.increment()
-                    break
-                else:
-                    print('Something is wrong')
-                    return False
+                for result in results:
+                    columns = result.split()
+                    if len(columns) == 11 and columns[1] == '1':
+                        statusMsg = columns[5:8]
+                        statusMsg = ' '.join(statusMsg)
+                        remaining = columns[8]
+                        msg = statusMsg + ' with percent left: ' + remaining
+                        print(msg, end='                                  \r')
+                        if remaining != previous:
+                            previous = remaining
+                            GLib.idle_add(update_progess, msg)
+                            i+=1
+                        break
+                    elif len(columns) == 10 and columns[1] == '1':
+                        statusMsg = columns[4:7]
+                        statusMsg = ' '.join(statusMsg)
+                        remaining = columns[7]
+                        msg = statusMsg + ' with percent left: ' + remaining
+                        print(msg, end='                                  \r')
+                        if remaining != previous:
+                            previous = remaining
+                            GLib.idle_add(update_progess, msg)
+                            i+=1
+                        break
 
                 # Don't check too often
                 time.sleep(5)
-                
-            self.window.close()
+            
+            # Get the final result
+            result = run(['smartctl', '-l', 'selftest', drive], capture_output=True)
+            # The most recent result should be at the very top
+            results = result.stdout.decode('utf-8').splitlines()
+            columns = results[6].split()
+            statusMsg = columns[4] + ' ' + columns[5] + ' ' + columns[6]
+            print('\n' + statusMsg)
+            
             return True
         else:
             print("Must have super user privileges. Try running with sudo?")
 
+    # Set window title
+    window.set_title("Checking Disk...")
 
-    # Runs the long test
-    def longDST(self, drive):
-        if self.isSudo():
-            result = run(['smartctl', '--test=long', drive], capture_output=True)
-            lines = result.stdout.decode('utf-8').splitlines()
-            print(lines)
-            print(len(lines))
-            # Most likely successful if there are more than 4 lines
-            if len(lines) == 10:
-                estimateCompleteTime = int(re.search(r'\d+', lines[7]).group())
-                print('estimate complete: ' + str(estimateCompleteTime) + ' minute(s)')
-                estimateCompleteDate = lines[8][24:]
-                print('estimate complete date: ' + estimateCompleteDate)
-            
-            remaining = ''
-            while remaining != '00%':
-                result = run(['smartctl', '-l', 'selftest', drive], capture_output=True)
-                # The most recent result should be at the very top
-                results = result.stdout.decode('utf-8').splitlines()
-                columns = results[6].split()
-                # 11 columns means still in progress
-                if len(columns) == 11:
-                    statusMsg = columns[5] + ' ' + columns[6] + ' ' + columns[7]
-                    remaining = columns[8]
-                    lifeInDriveRemain = columns[9]
-                    # LBA means Logic Block Address
-                    LBAFirstError = columns[10]
-                    print(statusMsg + ' with percent left: ' + remaining)
-                # 10 means complete
-                elif len(columns) == 10:
-                    statusMsg = columns[4] + ' ' + columns[5] + ' ' + columns[6]
-                    remaining = columns[7]
-                    lifeInDriveRemain = columns[8]
-                    # LBA means Logic Block Address
-                    LBAFirstError = columns[9]
-                    print(statusMsg + ' with percent left: ' + remaining)
-                    break
-                else:
-                    print('Something is wrong')
+    # Connect signals
+    progressContinue.connect("clicked", on_ProgressContinue_clicked)
+    progressShowMore.connect("toggled", on_ProgressShowMore_toggled)
 
-                # Don't check too often
-                time.sleep(5)
-        else:
-            print("Must have super user privileges. Try running with sudo?")
+    # Display the window
+    window.show_all()
 
+    # Set terminal invisible
+    if progressShowMore.get_active():
+        terminalContainer.set_visible(True)
+        window.resize(400,350)
+    else:
+        terminalContainer.set_visible(False)
+        window.resize(400,200)
 
-    # CheckDiskProgressWindow init
-    def __init__(self, gladefile):
-        # Set the Gladefile to read from
-        self.gladefile = gladefile
-
-        # Create the GTK Builder from the Gladefile
-        self.builder = Gtk.Builder()
-        self.builder.add_from_file(self.gladefile)
-        self.builder.connect_signals(self)
-
-        # Locate the AboutWindow and display
-        self.window = self.builder.get_object("CheckDiskProgressWindow")
-        self.progressbar = self.builder.get_object("CheckDiskProgressBar")
-        self.terminal = self.builder.get_object("ProgressTerminal")
+    # Initialize and start a shortDST thread
+    thread = threading.Thread(target=shortDST, args=(drive,), daemon=True)
+    thread.start()

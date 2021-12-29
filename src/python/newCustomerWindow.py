@@ -6,11 +6,11 @@ except:
 
 # Window Imports
 try:
-    from checkDiskProgressWindow import CheckDiskProgressWindow
+    from checkDiskProgressWindow import progress_main
     from driveListWindow import DriveListWindow
     from keyWindows import APFSKeyDialog, BitLockerKeyDialog
 except:
-    from src.python.checkDiskProgressWindow import CheckDiskProgressWindow
+    from src.python.checkDiskProgressWindow import progress_main
     from src.python.driveListWindow import DriveListWindow
     from src.python.keyWindows import APFSKeyDialog, BitLockerKeyDialog
 
@@ -164,13 +164,8 @@ class NewCustomerWindow(object):
         
         # If hard drive is not encrypted, run a quick hard drive test before proceeding
         if not self.encrypted:
-
-            # Hopefully show progress window...
-            self.progressWindow.show()
-
-            # Run drive test
-            if self.progressWindow.shortDST(self.drivePath):
-                print("%s passed the hard drive test.\nBeginning Backup..." % self.drivePath)
+            # Open a progress Window which also performs the hard drive test
+            progress_main(self.drivePath)
         else:
             print("Cannot run hard drive test on encrypted drives")
 
@@ -192,7 +187,7 @@ class NewCustomerWindow(object):
         self.window.show()
 
         # Initialize the "global" variables
-        self.progressWindow = CheckDiskProgressWindow(self.gladefile)
+        # self.progressWindow = CheckDiskProgressWindow(self.gladefile)
         self.partition = None
         self.drivePath = '/dev/'
         self.encrypted = False

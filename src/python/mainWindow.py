@@ -50,6 +50,10 @@ class MainWindow(object):
 
     def on_CheckBackupsButton_clicked(self, object):
         None
+
+    def on_ExitButton_clicked(self, object):
+        print("Exiting Application from Home Page")
+        gtk.main_quit()
     ##### BUTTONS #####
 
 

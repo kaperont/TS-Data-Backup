@@ -44,12 +44,10 @@ def checkDeviceHealth(drive) -> str:
 
 
 # Run's the short HD test
-def shortDST(drive, gui=False) -> bool:
+def shortDST(drive) -> bool:
     if isSudo():
         result = run(['smartctl', '--test=short', drive], capture_output=True)
         lines = result.stdout.decode('utf-8').splitlines()
-        # print(lines)
-        # print(len(lines))
         # Most likely successful if there are more than 4 lines
         if len(lines) == 10:
             estimateCompleteTime = int(re.search(r'\d+', lines[7]).group())
@@ -131,5 +129,3 @@ if __name__ == '__main__':
             shortDST(sys.argv[1], True)
         except:
             print("Could not check disk")
-# checkDeviceHealth('/dev/sda')
-#longDST('/dev/sdc')

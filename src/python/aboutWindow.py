@@ -22,4 +22,5 @@ class AboutWindow(object):
 
         # Locate the AboutWindow and display
         self.window = self.builder.get_object("AboutWindow")
+        self.window.set_title("About")
         self.window.show()
